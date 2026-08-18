@@ -1366,6 +1366,17 @@ const BASE_NEGATIVE = [
   "floating", "levitating", "feet not touching the ground", "hovering",
   "distorted limbs", "extra limbs", "deformed hands", "morphing", "warping",
   "duplicate person", "duplicated", "double subject", "clone", "inconsistent scale", "miniature people", "tiny background people",
+  // NAMED-SUBJECT SCALE — "inconsistent scale"/"miniature people"/"tiny
+  // background people" just above are the CROWD-scoped version of this guard
+  // (4-images.ts's own headcount/scaleLock text is the positive-side fix for
+  // the named subject; this is its negative-side counterpart, previously
+  // missing entirely — the crowd fix's own comment literally says "hence the
+  // tiny people," but never extended the same protection to the foreground
+  // lead). Confirmed real: a shorter, stooped older character rendered
+  // visibly smaller than the room and furniture around him.
+  "the main subject rendered smaller than a real person relative to their surroundings",
+  "a named character looking miniature, doll-sized, or child-sized despite being an adult",
+  "the foreground person appearing shrunken or distant while the room around them stays full-sized",
   // MOTION-LEVEL REPETITION. Distinct from the STATIC duplication guards below
   // (a second body in the same frame) — these are VIDEO-ONLY artifacts where
   // the clip's own motion repeats or mirrors itself. Real reported failure: a

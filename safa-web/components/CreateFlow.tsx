@@ -576,6 +576,39 @@ export default function CreateFlow({
       .catch((e) => setErr((e as Error).message))
       .finally(() => setResuming(false));
   }
+  // CONFIRMED REAL GAP, FIXED — the "Start over" button on the error screen
+  // (phase === "error", below) was the ONLY action offered there, and reset()
+  // abandons the project entirely (setProjectId(null)), which is exactly what
+  // throws away eligibility for the worker's own project-scoped caching
+  // (restoreCachedArtifacts, plus 4-images.ts's per-shot cache-hit check) —
+  // a render that died mid-way (e.g. a shots job failing on shot 2 after
+  // shot 1's keyframe already rendered and was banked to R2/Artifact) had no
+  // way to pick back up from there through this screen; the user's only path
+  // re-paid for and re-rendered everything from shot 1 again.
+  // /api/projects/[id]/chat's "proceed" intent ALREADY handles project.status
+  // === "failed" correctly end to end (retryForFailedJob(), same file) — it
+  // re-queues a NEW job of the SAME type against the SAME project, which the
+  // worker's existing cache machinery (project-id-scoped, not job-id-scoped)
+  // picks up correctly. The only missing piece was a UI path to reach it
+  // without the user having to know to type "continue" (not "again" — the
+  // more natural "render again" is vetoed by lib/intent.ts's REDO_RE) into
+  // the chat panel instead of clicking the one visible button.
+  function continueFailedRender() {
+    if (!pid.current || resuming) return;
+    setResuming(true);
+    post(`/api/projects/${pid.current}/chat`, { content: "continue" })
+      .then((d: { acted?: boolean; messages?: { content: string }[] }) => {
+        if (d?.acted) { resume(); return; }
+        // Nothing was actually queued (e.g. no job on record for this
+        // project to retry from) — surface the assistant's own explanation
+        // rather than silently flipping to the working/polling screen with
+        // nothing actually running.
+        const last = d?.messages?.[d.messages.length - 1];
+        setErr(last?.content || "Couldn't continue this render — try Start over instead.");
+      })
+      .catch((e) => setErr((e as Error).message))
+      .finally(() => setResuming(false));
+  }
 
   // ---- breakdown review actions ----
   // "MM:SS" / "HH:MM:SS" — must match ai-film-pro's compiler.ts formatTimecode()
@@ -1461,7 +1494,16 @@ export default function CreateFlow({
     return (
       <div className="cf fadein" style={{ maxWidth: 600 }}>
         <div className="cf-err">Something went wrong: {err}</div>
-        <button className="tb-btn" style={{ marginTop: 14 }} onClick={reset}>Start over</button>
+        <p className="hint">
+          If the cause is fixed now (e.g. a billing/provider issue), Continue picks back up from
+          whatever already finished rendering — it does not start over from the beginning.
+        </p>
+        <div className="cf-actions" style={{ marginTop: 14 }}>
+          <button className="go" onClick={continueFailedRender} disabled={resuming}>
+            {resuming ? "Continuing…" : "▶ Continue"}
+          </button>
+          <button className="tb-btn" onClick={reset}>Start over</button>
+        </div>
       </div>
     );
   }

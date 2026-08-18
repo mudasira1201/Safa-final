@@ -658,11 +658,30 @@ export async function runImages(
     //
     // So we scope the reference explicitly: take the STREET from it, take the
     // PERSON from the character sheet, and state the headcount as a hard number.
+    // CONFIRMED REAL GAP, FIXED (a shorter/older/stooped named character
+    // rendered visibly too small for the room — "tiny person" defect): the
+    // BACKGROUND-crowd version of this exact failure was already fixed
+    // elsewhere in this file ("Crowd is BACKGROUND. Scale was never
+    // constrained — hence the tiny people.") — but that fix only ever
+    // anchored CROWD figures to "correct human scale," never the named
+    // foreground subject(s) headcount governs. A character's own appearance
+    // text (age/build/height/posture — e.g. "shorter, stooped") flows
+    // straight into the prompt with nothing telling the model that a
+    // shorter or stooped ADULT is still full adult scale, not a smaller,
+    // more distant-looking, or child/doll-sized figure. Folded directly into
+    // headcount (not a separate variable) so it rides along everywhere
+    // headcount already does, at zero extra cost and no new call sites.
+    const scaleLock =
+      " Every person in this frame renders at correct, full real-world ADULT HUMAN SCALE relative to the room, " +
+      "furniture, doorways, and any other people or objects around them — exactly as large as a real person " +
+      "of ordinary adult height actually standing there, never smaller, more distant-looking, or doll/child-" +
+      "sized. This holds regardless of how a person's build, height, or posture is described — a shorter, " +
+      "stockier, or stooped physique is still ordinary adult human size, not a miniature figure.";
     const headcount =
       inFrameIds.length === 0
         ? "There are NO people in the foreground of this frame."
         : inFrameIds.length === 1
-        ? `There is EXACTLY ONE person in this frame — ${displayName(inFrameIds[0])} — and he/she appears ONCE. Do NOT paint a second copy of this person. Do NOT place anyone behind, beside, or overlapping them. Any person visible in the first reference image IS this same single person, not an additional one.`
+        ? `There is EXACTLY ONE person in this frame — ${displayName(inFrameIds[0])} — and he/she appears ONCE. Do NOT paint a second copy of this person. Do NOT place anyone behind, beside, or overlapping them. Any person visible in the first reference image IS this same single person, not an additional one.${scaleLock}`
         : (() => {
             // Same fix as the solo case just above, extended to 2+ people: a bare
             // total-count constraint ("exactly 2, each appears once") is a much
@@ -675,7 +694,7 @@ export async function runImages(
               `There are EXACTLY ${inFrameIds.length} people in this frame and no others: ${who.join(", ")}. ` +
               `Each of them appears EXACTLY ONCE — do NOT paint a second copy of ${who.join(" or ")}. ` +
               `Do NOT duplicate, double, or repeat any of them anywhere in the frame, foreground or background. ` +
-              `Any person visible in the first reference image IS one of these same people, not an additional one.`
+              `Any person visible in the first reference image IS one of these same people, not an additional one.${scaleLock}`
             );
           })();
 
@@ -1024,6 +1043,64 @@ export async function runImages(
         lastUrl = await renderKeyframeCounted(endPrompt, [firstUrl, ...refUrls, ...productRefs], keyframeAspect());
         timeEndFrameRenderMs += since(tEndRender);
         await downloadToFile(lastUrl, destB);
+
+        // CONFIRMED REAL GAP, FIXED (both named characters drifting on the
+        // LAST shot(s) of a film): the identity audit above (dueForIdentityCheck)
+        // only ever checked firstUrl. This endpoint — the shot's actual FINAL,
+        // fully-in-frame image, and per ENTRANCE_ENDPOINTS_AUTOFILLED (compiler.ts)
+        // often the FIRST clearly-visible view of a re-entering character's face,
+        // since their own startFrame is deliberately only "one shoulder, arm, and
+        // leg... partially visible" — was never verified at all. Since lastUrl
+        // becomes both the literal final frame the audience sees (5-videos.ts's
+        // lastImageUrl) AND the next shot's own continuity reference (prevLastUrl
+        // below), an uncaught drift here is exactly what reads as "changed in the
+        // last shot" — and propagates forward into whatever follows. Mirrors
+        // firstUrl's own check immediately above: one retry, confirmedBad + flag
+        // (which already gates chain containment below) on a persisting failure,
+        // never a hard block.
+        if (dueForIdentityCheck) {
+          for (const id of inFrameIds) {
+            const c = charById[id];
+            if (!c) continue;
+            const tEndIdentityCheck = Date.now();
+            const endCheck = await checkIdentity(c.name, sheet[id], lastUrl);
+            timeIdentityCheckMs += since(tEndIdentityCheck);
+            if (endCheck.unverified) {
+              flag(shot.id, `${c.name}'s identity check on the END keyframe could not be completed after retries (API/network error) — NEVER VERIFIED, not confirmed matching.`);
+              continue;
+            }
+            if (endCheck.pass) continue;
+            console.warn(`   ⚠️  ${shot.id}: identity drift confirmed for ${c.name} on the END keyframe — ${endCheck.detail || "no longer matches the reference sheet"}. Retrying once.`);
+            const endCorrectionPrompt =
+              `${endPrompt} IDENTITY CORRECTION: a review just found ${c.name}'s face in the previous attempt ` +
+              `no longer matched their reference photos (${endCheck.detail || "noticeable drift"}). Reproduce ` +
+              `${c.name}'s face EXACTLY as shown in their reference images this time — do not reinterpret it.`;
+            try {
+              const tEndCorrectionRender = Date.now();
+              const correctedEnd = await renderKeyframeCounted(
+                endCorrectionPrompt,
+                [firstUrl, ...refUrls, ...productRefs],
+                keyframeAspect(),
+              );
+              timeIdentityCorrectionRenderMs += since(tEndCorrectionRender);
+              const tEndRecheck = Date.now();
+              const endRecheck = await checkIdentity(c.name, sheet[id], correctedEnd);
+              timeIdentityCheckMs += since(tEndRecheck);
+              if (endRecheck.pass) {
+                lastUrl = correctedEnd;
+                await downloadToFile(lastUrl, destB);
+                console.log(`   ✓ ${shot.id}: identity correction succeeded for ${c.name} on the END keyframe.`);
+              } else {
+                confirmedBad = true;
+                flag(shot.id, `${c.name}'s face drifted from their reference photos on the END keyframe (${endCheck.detail || "noticeable drift"}) and a retry didn't fix it`);
+                console.warn(`   ⚠️  ${shot.id}: identity drift for ${c.name} on the END keyframe persisted after one retry — keeping this render, flagged for human review. It will NOT be used as the next shot's reference (see chain containment).`);
+              }
+            } catch (e) {
+              if (!isContentPolicyError(e)) throw e;
+              console.warn(`   ⚠️  ${shot.id}: identity-correction retry on the END keyframe refused on content grounds — keeping the original render.`);
+            }
+          }
+        }
       } catch (e) {
         if (!isContentPolicyError(e)) throw e;
         // A refused END frame is not fatal: drop to a single endpoint and carry on.

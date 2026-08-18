@@ -363,11 +363,22 @@ export async function runVideos(
     // already works for identity and background. Skipped for a crowd shot —
     // crowdText already explicitly allows background people there, and this
     // clause's own wording would directly contradict it.
+    // SCALE LOCK — same fix, same reasoning, as 4-images.ts's own headcount
+    // scale clause (the keyframe already renders at correct scale by the time
+    // this clip starts from it; this guards against the video model's own
+    // motion generation drifting a shorter/stooped named character smaller
+    // relative to the room as the clip plays, the same "tiny person" defect
+    // confirmed on camera, just at the video stage instead of the keyframe).
     const castCountText = presentNames.length && !shot.crowd
       ? ` CAST LOCK: ${presentNames.join(" and ")} appear${presentNames.length === 1 ? "s" : ""} EXACTLY ONCE ` +
         `each in this clip, in every single frame from first to last — never duplicated, cloned, doubled, or ` +
         `shown twice at the same time anywhere in frame, even briefly, even partially, even in the background. ` +
-        `No other person appears anywhere in this clip, foreground or background, however brief or out of focus.`
+        `No other person appears anywhere in this clip, foreground or background, however brief or out of focus. ` +
+        `${presentNames.join(" and ")} render${presentNames.length === 1 ? "s" : ""} at correct, full real-world ` +
+        `ADULT HUMAN SCALE relative to the room, furniture, doorways, and anyone else on screen throughout the ` +
+        `ENTIRE clip — exactly as large as a real person of ordinary adult height actually standing there, never ` +
+        `smaller, more distant-looking, or doll/child-sized, regardless of how their build, height, or posture is ` +
+        `described. A shorter, stockier, or stooped physique is still ordinary adult human size.`
       : "";
 
     // BACKGROUND STABILITY FOR A STATIC-CAMERA APPROACH SHOT — Priority 8,

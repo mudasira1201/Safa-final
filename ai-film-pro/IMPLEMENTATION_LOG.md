@@ -565,3 +565,142 @@ during the held portion. The 1.5s margin is a judgment call, not a
 measured constant; a shot sitting just under it (e.g. a "pick up" shot at
 3.4s, 1.4s over) is not autofixed and could still show the same symptom at
 a smaller scale.
+
+---
+
+## Task 10: Fix — regression, both named characters drifted in the last shot(s)
+Status: done
+Files: `src/steps/4-images.ts:1026-1084` (new END-keyframe identity check,
+inside the existing `needsEnd` block)
+
+Reported symptom (user): character consistency, previously reliable,
+regressed — in the last shot(s) of a film, BOTH named characters no longer
+matched their established look. User asked for this fix ONLY, nothing else
+(launch in 2 days).
+
+Root cause — a real regression, traced to Task 7 exposing a pre-existing,
+never-checked code path far more often: `dueForIdentityCheck` (line ~733)
+already forces an identity audit whenever 2+ named characters are in frame,
+position-independent — so a 2-character last shot WAS always eligible for
+checking. But that audit (the block just above this fix) only ever called
+`checkIdentity()` against `firstUrl` — the shot's OPENING keyframe. The END
+keyframe (`lastUrl`, generated in the separate `needsEnd` block for any
+`method="flf"` shot) was NEVER passed to `checkIdentity()` at all — zero
+verification, zero retry, zero flag, on either character, ever. Task 7
+(same session, earlier) correctly fixed the duplicate-ghost-figure bug by
+changing which shots get flagged as a genuine entrance — but the direct
+consequence is that a RETURNING character re-entering a LATER scene (a
+reunion/finale beat — exactly "both characters" in "the last" shots) now
+gets `method="flf"` far more often than before, so `lastUrl` now gets
+generated — and left unchecked — on exactly this class of shot, far more
+often than before today. Compounding it: that same character's own
+`startFrame` (per `ENTRANCE_ENDPOINTS_AUTOFILLED`) is deliberately "one
+shoulder, arm, and leg... partially visible" — so even the ONE frame that
+WAS being checked (`firstUrl`) shows only a partial, edge-of-frame view of
+the face on this exact shot shape, a weak signal for the audit to catch
+drift on. `lastUrl` — the shot's fully-in-frame, unaudited image — becomes
+both the literal final frame the audience sees (`5-videos.ts`'s
+`lastImageUrl`) and the next shot's own continuity reference (`prevLastUrl`),
+so any drift there is both maximally visible and propagates forward.
+
+Fix: mirrors the existing `firstUrl` identity-check block exactly (same
+file, immediately above) — one retry with an IDENTITY CORRECTION prompt
+reusing the same reference set the original end-frame render used, and on a
+persisting failure after that retry, sets the SAME `confirmedBad` flag the
+firstUrl path already uses — which already gates chain containment (a
+confirmed-bad frame is never used as the next shot's continuity reference)
+and human-review flagging (`flag()`), with no new mechanism needed for
+either. Gated on the SAME `dueForIdentityCheck` condition, so it costs
+nothing extra on shots that were never eligible for auditing before. Does
+NOT touch Task 7's `newEntrants` fix (still correct — it fixed a real,
+different, confirmed bug) or anything in `compiler.ts`/`5-videos.ts` — the
+gap was specifically "this one frame was never checked," not a flaw in the
+entrance logic itself.
+
+Evidence:
+```
+$ npx tsc --noEmit
+(no output — exit clean)
+```
+Live network verification (real `checkIdentity()`/image-generation calls,
+real API cost) intentionally not run here — same call shape as the
+already-proven `firstUrl` block it mirrors line-for-line, and the user's
+explicit ask was this fix ONLY, under a 2-day launch deadline, not a live
+test render.
+
+Ceiling: same ceiling the firstUrl check already has, now extended to
+lastUrl — one retry, not a guarantee; a drift that survives the retry still
+ships (flagged for human review, not blocked), consistent with this
+pipeline's "never lose or block the whole render over one QA finding"
+philosophy everywhere else. Does not address the OTHER, independent,
+pre-existing gap the research agent surfaced (a per-character correction on
+either frame is a WHOLE-keyframe regenerate, so fixing one person's drift
+can, rarely, shift the other's rendering too) — that is a documented,
+accepted limitation elsewhere in this same file, not something this task
+touched, per the user's explicit "nothing else" scope.
+
+---
+
+## Task 11: Fix — named character rendered too small relative to surroundings
+Status: done
+Files:
+- `src/steps/4-images.ts:661-679` (`scaleLock`, folded into `headcount`)
+- `src/steps/5-videos.ts:366-378` (`castCountText` scale clause)
+- `src/lib/compiler.ts:1368-1376` (`BASE_NEGATIVE` named-subject scale terms)
+
+Reported symptom (user): an older, shorter-statured named character ("an old
+man") rendered visibly smaller than the room and furniture around him in a
+prior render — a "miniature person" scale defect, not identity/duplication.
+
+Root cause, confirmed by direct grep, not assumed: this EXACT failure mode
+was already found and fixed once before in this codebase, but only for
+BACKGROUND crowd figures — `4-images.ts`'s own comment says so verbatim:
+"Crowd is BACKGROUND. Scale was never constrained — hence the tiny people."
+That fix added "at correct human scale" to the crowd/background prompt text
+in `4-images.ts` and `5-videos.ts`, and `compiler.ts`'s `BASE_NEGATIVE`
+carries "tiny background people" — all three explicitly crowd-scoped. The
+NAMED, foreground subject(s) — governed by `headcount` (4-images.ts) and
+`CAST LOCK`/`castCountText` (5-videos.ts) — had zero scale anchoring, positive
+or negative. A character's own physical-description text (age/build/height/
+posture, e.g. "shorter height, slightly stooped posture") flows straight
+into the image/video prompt with nothing telling the model that a shorter or
+stooped ADULT is still ordinary adult scale, not a smaller or doll/child-
+sized figure. Confirmed via `qa.ts` too: no finding kind covers scale/
+proportion at all (closest are `anatomy_error`/`physics_violation`, neither
+about size-in-environment) — this was undetectable post-render as well as
+unprotected pre-render.
+
+Fix, three layers, same shape as the crowd fix it mirrors:
+1. `4-images.ts` — a `scaleLock` clause folded directly into `headcount`
+   (not a new variable threaded through call sites): asserts every person in
+   frame renders at correct, full adult human scale relative to the room/
+   furniture/doorways, explicitly regardless of described build/height/
+   posture. Rides along everywhere `headcount` already does, at zero extra
+   cost.
+2. `5-videos.ts` — the equivalent clause appended to `castCountText` (same
+   gate: named cast present, not a crowd shot), guarding the VIDEO model's
+   own motion generation from drifting scale as the clip plays, not just the
+   starting keyframe.
+3. `compiler.ts` `BASE_NEGATIVE` — three new negative-prompt terms naming
+   the NAMED-subject version of this defect specifically, distinct from the
+   existing crowd-scoped "tiny background people"/"miniature people".
+
+Evidence:
+```
+$ npx tsc --noEmit
+(no output — exit clean)
+```
+Pure prompt-text concatenation (no branching logic beyond what already
+existed) — verified by direct code reading rather than a synthetic unit
+test, consistent with how the ORIGINAL crowd-scale fix this mirrors was
+itself verified (no test scaffolding exists for image/video prompt text in
+this codebase; `4-images.ts`/`5-videos.ts` call real paid APIs).
+
+Ceiling: text-only, like every other prompt-side fix in this log — gives the
+model an explicit, unambiguous instruction it didn't have before, cannot
+force compliance. No QA-side detection was added (out of the user's
+explicit "fix this issue" scope, under a 2-day launch deadline) — a scale
+defect that survives this prompt fix still ships completely undetected and
+unflagged, unlike identity/duplication defects which at least get a
+post-render check and a flag. If this recurs after a real test render, the
+next step would be a `qa.ts` finding kind for it, not a stronger prompt.
