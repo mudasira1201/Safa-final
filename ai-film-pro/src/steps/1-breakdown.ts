@@ -11,7 +11,7 @@ import { inferredToStagingRule } from "../lib/stagingLibrary";
 import { writeJson, readJsonOr, fileExists, isMain } from "../util";
 import { mapLimit } from "../concurrency";
 import type { Breakdown } from "../types";
-import { parseLanguage, languageName, isTranslated, DEFAULT_LANGUAGE } from "../lib/languages";
+import { isTranslated, DEFAULT_LANGUAGE } from "../lib/languages";
 
 /** How many times we hand a rejection back to the LLM before giving up. */
 const MAX_REPAIRS = 2;
@@ -250,14 +250,22 @@ export async function runBreakdown(scriptOverride?: string): Promise<Breakdown> 
     script = await fs.readFile(config.scriptPath, "utf8");
   }
 
-  // SPOKEN LANGUAGE — read from the script's "[Language: ...]" tag, the same
-  // bracket-tag convention parseTargetSeconds() above already reads. No tag
-  // (a bare script, the CLI path, or any project created before this feature)
-  // means English, i.e. exactly the previous behaviour.
-  const language = parseLanguage(script) ?? DEFAULT_LANGUAGE;
-  if (isTranslated(language)) {
-    console.log(`🗣  Spoken language: ${languageName(language)} — dialogue will be written and performed in ${languageName(language)}.`);
-  }
+  // MULTILINGUAL DUBBING/LIP-SYNC TURNED OFF PRODUCT-WIDE (safa-web's own
+  // "Spoken language" picker was removed from CreateFlow.tsx in the same
+  // change) — no longer parses the script's "[Language: ...]" tag at all,
+  // so a script that still contains one (hand-typed, or an older saved
+  // project) is silently ignored rather than reactivating the feature.
+  // Forcing DEFAULT_LANGUAGE here is the ONE place that matters: it makes
+  // isTranslated(language) always false downstream, which is what
+  // 5-videos.ts's dub step (synthesizeSpeech + applyLipSync, providers/
+  // tts.ts + providers/lipsync.ts) is gated on — so the lip-sync pass
+  // never fires either, without touching that file or deleting either
+  // provider. lib/languages.ts itself (parseLanguage/isTranslated/
+  // languageName/FILM_LANGUAGES) is left fully intact and still exported —
+  // only this one call site (and CreateFlow.tsx's picker) stopped using
+  // it — so this is a single-point, reversible toggle rather than a
+  // multi-file removal two days before launch.
+  const language = DEFAULT_LANGUAGE;
 
   console.log("🧠 Directing: breaking the script into characters + shots...");
   let raw = await timedPhase("breakdownScript", () => breakdownScript(script, language, countExplicitShots(script)));

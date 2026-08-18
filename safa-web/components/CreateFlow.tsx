@@ -4,7 +4,7 @@ import Dialog, { type DialogSpec } from "./Dialog";
 import ChatPanel from "./ChatPanel";
 import starterPrompts from "@/config/starter-prompts.json";
 import { creditsFor, type Resolution } from "@/lib/pricing";
-import { FILM_LANGUAGES, DEFAULT_FILM_LANGUAGE } from "@/lib/languages";
+import { DEFAULT_FILM_LANGUAGE } from "@/lib/languages";
 import { MAX_SCRIPT_CHARS, MIN_SCRIPT_CHARS, MIN_AD_SCRIPT_CHARS } from "@/lib/limits";
 
 const MIN_SCRIPT = MIN_SCRIPT_CHARS;
@@ -216,7 +216,10 @@ export default function CreateFlow({
   // "[Language: xx]" bracket tag (same convention as `duration`/`cameraStyle`).
   // Defaults to English, and route.ts writes no tag at all for English — so a
   // user who never touches this picker gets byte-identical behaviour to before.
-  const [language, setLanguage] = useState(DEFAULT_FILM_LANGUAGE);
+  // Spoken-language picker removed (see the removed rr-group block further
+  // down) — language is permanently the default now, never changed by the
+  // user, so there is no setter to wire up.
+  const [language] = useState(DEFAULT_FILM_LANGUAGE);
   // Ad mode: whether a spokesperson appears in the ad at all. OFF = faceless
   // product-only ad (the default). ON = the director plans one shot with a
   // person — the user's own Character photo if attached, otherwise an
@@ -1061,33 +1064,12 @@ export default function CreateFlow({
                 <button className={resolution === "1080p" ? "on" : ""} onClick={() => setResolution("1080p")} type="button" title="1080p — Full HD, AI-upscaled for enhanced detail">1080p</button>
               </div>
             </div>
-            {/* Spoken language — FILM MODE ONLY. Dialogue is written and
-                performed in the chosen language; everything else about the
-                render is unchanged. Ads are voiceover/product-led and are not
-                part of this feature, which is why this is gated the opposite
-                way from the two ad-only groups below. */}
-            {mode !== "ad" && (
-              <div className="rr-group">
-                <span className="rr-lbl">Spoken language</span>
-                <div className="rr-seg rr-seg-wrap">
-                  {FILM_LANGUAGES.map((l) => (
-                    <button
-                      key={l.code}
-                      className={language === l.code ? "on" : ""}
-                      onClick={() => setLanguage(l.code)}
-                      type="button"
-                      title={
-                        l.code === DEFAULT_FILM_LANGUAGE
-                          ? "Dialogue written and performed in English"
-                          : `Dialogue written and performed in ${l.name} (${l.native})`
-                      }
-                    >
-                      {l.code === DEFAULT_FILM_LANGUAGE ? l.name : `${l.name} · ${l.native}`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Spoken-language picker removed (multilingual dubbing/lip-sync
+                feature turned off product-wide — see 1-breakdown.ts and
+                5-videos.ts in ai-film-pro for the backend half of this).
+                `language` state is left wired to its DEFAULT_FILM_LANGUAGE
+                initial value below and still flows into the create payload
+                unchanged — nothing else in this component needs to change. */}
             {mode === "ad" && (
               <div className="rr-group">
                 <span className="rr-lbl">Signature camera style</span>
