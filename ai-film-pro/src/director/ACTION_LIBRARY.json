@@ -1,0 +1,865 @@
+{
+  "version": 1,
+  "note": "Each entry: when triggerPattern matches a shot's AUTHORED motion/description text, its description is appended to that shot's motion (once — idempotent across recompiles via the leading marker phrase), and its negatives are folded into that shot's negative prompt. This exists because the LLM breakdown writes a generic verb ('he walks over and hands her the parcel') and leaves the video model to improvise the actual physical mechanics from scratch — which is exactly where AI video looks least human. These entries encode, once, in real biomechanical detail, how each common action actually looks performed naturally, so every shot that needs it gets the same well-tested direction instead of a fresh improvisation each time.",
+  "actions": [
+    {
+      "key": "walking",
+      "triggerPattern": "\\b(walks?|walking|strolls?|strolling|paces?|pacing|ambles?|ambling)\\b",
+      "marker": "Natural walking mechanics:",
+      "description": "Natural walking mechanics: a steady, continuous human gait — legs alternate in a smooth heel-to-toe stride, the opposite arm swings naturally with each leg (right arm forward with left leg, and vice versa), the torso carries a slight natural rotation, and the head stays level with only subtle vertical bob. Each foot makes full, solid contact with the ground and rolls from heel to toe before it clears the surface — never sliding, skating, or floating above the ground. The speed is steady and unhurried unless the scene calls for urgency; weight fully transfers from one foot to the other with each step, and he/she covers real ground, continuously moving rather than staying in place.",
+      "negatives": [
+        "sliding feet",
+        "gliding without steps",
+        "feet skating on the ground",
+        "moonwalking",
+        "feet not touching the ground",
+        "floating walk",
+        "legs moving without covering ground"
+      ]
+    },
+    {
+      "key": "running_jogging",
+      "triggerPattern": "\\b(runs?|running|ran|jogs?|jogging|sprints?|sprinting|dashes?|dashing)\\b",
+      "marker": "Natural running mechanics:",
+      "description": "Natural running mechanics: knees drive forward and up with each stride, arms pump back and forth bent at roughly 90 degrees, the opposite arm and leg move together, and there is a brief moment where both feet leave the ground between strides. Each footfall is firm and decisive, never sliding or skating. The torso leans very slightly forward with the effort, breathing may show in the shoulders. He/she covers real ground — the camera tracks WITH the runner so the background streams past behind them at a matching speed; the runner must end the shot at a clearly different position than where it began, never remaining in the same spot relative to the background.",
+      "negatives": [
+        "treadmill effect",
+        "running in place",
+        "sliding feet",
+        "feet skating on the ground",
+        "background not moving during a run",
+        "static background during running"
+      ]
+    },
+    {
+      "key": "giving_handoff",
+      "triggerPattern": "\\b(gives?|hands?\\s+(?:over|him|her|it|the)|offers?|passes?\\s+(?:him|her|it|the|over)|extends?\\s+(?:his|her|the)\\s+\\w+\\s+(?:toward|to|holding))\\b",
+      "marker": "Natural hand-off mechanics:",
+      "description": "Natural hand-off mechanics: the giving hand extends the object fully toward the receiver, the arm reaching a natural, unhurried extension — not a sudden thrust. Just before contact, the receiving fingers spread wide and the hand rises to meet it. The transfer itself is ONE continuous motion with no gap: the receiver's fingers wrap around the object at the very moment the giver's fingers release — the object is never unsupported in mid-air, and both people never grip it at once. The instant it releases, the giving hand relaxes and withdraws back toward its own body; the receiving hand settles into a natural, secure grip suited to the object's weight (fingers fully wrapped around a parcel or box; a loose closed fist around coins or small items), and may adjust its hold slightly, exactly once, the way a person naturally resettles their grip just after first taking hold of something. Neither hand reaches back for the object once it has changed hands, and the object never reappears in the giver's hand afterward.",
+      "negatives": [
+        "object floating between hands",
+        "object unsupported mid-transfer",
+        "both hands gripping the object at once",
+        "object stuck to an open palm",
+        "no visible grip on the object",
+        "fingers not wrapped around the object",
+        "giver reaching back for the object after releasing it",
+        "object reappearing in the wrong hand"
+      ]
+    },
+    {
+      "key": "receiving_taking",
+      "triggerPattern": "\\b(takes?|accepts?|receives?|grasps?|grabs?|closes?\\s+(?:his|her)\\s+fingers|hand\\s+closes)\\b",
+      "marker": "Natural receiving mechanics:",
+      "description": "Natural receiving mechanics: the receiving fingers spread wide, palm angled to meet the incoming object, and wrap around it the instant contact is made — a decisive, natural close, not a slow clamp or a hesitant fumble. Once wrapped, the grip settles and holds steady; the hand does not spread and re-wrap on the same object, and does not release it again unless the scene explicitly stages that as a separate, later beat.",
+      "negatives": [
+        "hand opening and closing repeatedly on the same object",
+        "object dropped immediately after being taken",
+        "delayed or fumbled grab"
+      ]
+    },
+    {
+      "key": "eating",
+      "triggerPattern": "\\b(eats?|eating|ate|bites?|biting|chews?|chewing|takes?\\s+a\\s+bite)\\b",
+      "marker": "Natural eating mechanics:",
+      "description": "Natural eating mechanics: a small, bite-sized portion is raised to the mouth; the mouth parts just enough to admit it and settles shut around it. Chewing follows as a natural, unhurried jaw movement — a slight side-to-side and up-down rhythm, not a rigid, mechanical up-down pump. The hand holding food or a utensil lowers back toward the plate or surface between bites rather than staying raised in front of the face. Any swallowing is a brief, subtle movement of the throat, not exaggerated.",
+      "negatives": [
+        "food floating into the mouth",
+        "jaw moving without chewing",
+        "hand frozen holding food mid-air between bites",
+        "mechanical chewing motion"
+      ]
+    },
+    {
+      "key": "jumping",
+      "triggerPattern": "\\b(jumps?|jumping|jumped|leaps?|leaping|leapt|hops?|hopping|vaults?|vaulting)\\b",
+      "marker": "Natural jumping mechanics:",
+      "description": "Natural jumping mechanics: a clear crouch/load phase precedes the jump — knees bend, arms swing back for momentum — followed by a driving push-off where the legs extend fully and both feet leave the ground together. In the air, the body's position is controlled and deliberate, not flailing or rigid. The landing absorbs the impact: knees bend on contact and the body's weight settles fully before any next action begins — never a stiff, jarring landing straight onto locked legs.",
+      "negatives": [
+        "rigid landing",
+        "landing on locked knees",
+        "flailing mid-air pose",
+        "no crouch before jumping",
+        "floating jump with no push-off"
+      ]
+    },
+    {
+      "key": "talking",
+      "triggerPattern": "\\b(talks?|talking|speaks?|speaking|says?|tells?|chats?|chatting)\\b",
+      "marker": "Natural speech mechanics:",
+      "description": "Natural speech mechanics: the mouth moves continuously and specifically in sync with each word being said — lips and jaw actively shaping the syllables, never a static face with a mouth animation pasted over it. Natural micro-movements accompany the speech: small head tilts, occasional brief hand gestures around waist-to-chest height rising and lowering with emphasis, and blinking at an irregular, natural rate. Between sentences or thoughts, the face relaxes briefly rather than holding one fixed expression the entire time.",
+      "negatives": [
+        "mouth not moving during speech",
+        "static face while talking",
+        "lips out of sync with speech",
+        "frozen expression during dialogue",
+        "unnatural unblinking stare"
+      ]
+    },
+    {
+      "key": "hugging",
+      "triggerPattern": "\\b(hugs?|hugging|hugged|embraces?|embracing|embraced)\\b",
+      "marker": "Natural embrace mechanics:",
+      "description": "Natural embrace mechanics: both people step or lean toward each other until their torsos meet, arms wrapping around the other's back or shoulders in a firm, natural hold — not a stiff, posed stance held at arm's length. There is a brief hold, often with a slight rock or gentle squeeze, before both people's arms loosen and withdraw together as they step back apart. Each person's hands and arms stay on their own body and the other's back/shoulders only — they never merge into, pass through, or overlap unnaturally with the other person's body.",
+      "negatives": [
+        "arms passing through the other person's body",
+        "limbs merging between the two people",
+        "stiff posed embrace with no body contact",
+        "one person's hand disappearing into the other's torso"
+      ]
+    },
+    {
+      "key": "sitting_down",
+      "triggerPattern": "\\b(sits?\\s+down|sitting\\s+down|takes?\\s+a\\s+seat|sits?\\s+on)\\b",
+      "marker": "Natural sitting mechanics:",
+      "description": "Natural sitting mechanics: the body lowers with control — knees bend, and a hand may briefly reach back or rest on an armrest for balance — as weight gradually transfers onto the seat. The descent is smooth and continuous, ending with the body settled and weight naturally distributed once seated — never an abrupt lurch downward, a sudden teleport into a seated pose, or a moment of floating half-seated.",
+      "negatives": [
+        "abrupt drop into the seat",
+        "teleporting from standing to seated",
+        "floating above the seat",
+        "unnatural rigid sitting posture"
+      ]
+    },
+    {
+      "key": "standing_up",
+      "triggerPattern": "\\b(stands?\\s+up|standing\\s+up|stood\\s+up|rises?\\s+(?:from|to\\s+(?:his|her|their)\\s+feet)|rising\\s+(?:from|to\\s+(?:his|her|their)\\s+feet))\\b",
+      "marker": "Natural standing-up mechanics:",
+      "description": "Natural standing-up mechanics: weight shifts forward first, a hand may press down on a nearby surface or knee for leverage, and the legs extend to raise the body in one continuous, natural motion — never a sudden teleport from seated to standing. Balance is found with a brief, natural settling motion once upright.",
+      "negatives": [
+        "teleporting from seated to standing",
+        "rigid instant standing with no weight shift",
+        "no balance settling after standing"
+      ]
+    },
+    {
+      "key": "fighting_striking",
+      "triggerPattern": "\\b(punches?|punching|punched|kicks?|kicking|kicked|slaps?|slapping|slapped|strikes?|striking|struck|shoves?|shoving|shoved)\\b",
+      "marker": "Natural strike mechanics:",
+      "description": "Natural strike mechanics: the striking limb winds back through a real load phase (a shoulder or hip rotation, weight shifting onto the back foot) before driving forward — never a strike that starts already at full extension with no wind-up. On impact, the target's body reacts with real transferred force: the head or torso snaps in the direction of the blow, the person may rock backward or lose footing for a beat, and only then recovers balance. The striker's own body recoils slightly from the effort of the blow. Both people's limbs stay physically separate before and after contact — a strike touches, then withdraws; it does not pass through or merge with the other person's body.",
+      "negatives": [
+        "punch with no wind-up",
+        "impact with no reaction from the target",
+        "limbs passing through the other person's body",
+        "strike that stops short and freezes mid-air",
+        "rubbery or boneless recoil",
+        "target standing perfectly still after being hit"
+      ]
+    },
+    {
+      "key": "falling_tripping",
+      "triggerPattern": "\\b(falls?|falling|fell|trips?|tripping|tripped|stumbles?|stumbling|stumbled|collapses?|collapsing|collapsed)\\b",
+      "marker": "Natural falling mechanics:",
+      "description": "Natural falling mechanics: balance is lost progressively, not instantly — a real stumble shows the arms flailing outward for balance, the torso pitching off its center of gravity, and one or more staggered, off-rhythm steps attempting (and failing) to catch the fall before the body actually goes down. Contact with the ground is followed by a beat of the body settling under real weight and momentum, limbs coming to rest naturally, not an instant frozen sprawl. If the fall is stopped by a hand or object (an arm braced against a table, a hand hitting the floor), that contact point visibly bears the person's weight.",
+      "negatives": [
+        "instant teleport to the ground",
+        "falling in perfect slow motion with no flailing",
+        "body freezing rigid mid-fall",
+        "landing already perfectly posed",
+        "no loss of balance before the fall"
+      ]
+    },
+    {
+      "key": "throwing",
+      "triggerPattern": "\\b(throws?|throwing|threw|tosses?|tossing|tossed|hurls?|hurling|hurled|flings?|flinging|flung)\\b",
+      "marker": "Natural throwing mechanics:",
+      "description": "Natural throwing mechanics: the throwing arm winds back with the object gripped firmly, the torso and hips rotate into the throw, and the arm whips forward, releasing the object at a natural point in the arc — not gripped all the way through the motion. Once released, the object leaves the hand cleanly and travels under its own momentum (arcing under gravity, not moving in a straight mechanical line); the throwing hand follows through naturally after release rather than stopping dead. The object is never still gripped in the hand after the throwing motion completes.",
+      "negatives": [
+        "object still stuck to the hand after the throw",
+        "no follow-through after release",
+        "object moving in a perfectly straight line ignoring gravity",
+        "throwing motion with no wind-up",
+        "object teleporting to its destination"
+      ]
+    },
+    {
+      "key": "climbing",
+      "triggerPattern": "\\b(climbs?|climbing|climbed|scales?\\s+(?:the|a)|scaling|clambers?|clambering)\\b",
+      "marker": "Natural climbing mechanics:",
+      "description": "Natural climbing mechanics: at any moment at least one hand or foot maintains solid, weight-bearing contact with the surface being climbed — the body never appears to float free of it. Limbs reach, find a real hold or foothold, and the body's weight visibly shifts onto that new point before the next limb moves — a deliberate, alternating sequence, not a smooth glide upward. Effort shows: a slight pause to find grip, visible tension in the gripping hand, the torso staying close to the climbed surface for balance.",
+      "negatives": [
+        "floating upward with no visible hand or foot contact",
+        "gliding up a surface without climbing motion",
+        "all limbs moving at once with no weight transfer",
+        "hands not gripping the surface"
+      ]
+    },
+    {
+      "key": "opening_door",
+      "triggerPattern": "\\b(opens?\\s+(?:the|a)\\s+door|opening\\s+(?:the|a)\\s+door|pushes?\\s+(?:the|a)\\s+door|pulls?\\s+(?:the|a)\\s+door|closes?\\s+(?:the|a)\\s+door|shuts?\\s+(?:the|a)\\s+door)\\b",
+      "marker": "Natural door mechanics:",
+      "description": "Natural door mechanics: a hand reaches out, makes solid contact with the handle or door surface, and grips or presses it before the door moves at all — the door never swings on its own ahead of the hand touching it. The door swings on its real hinge line at a natural speed, matching the effort of the push or pull; the hand stays in contact through the motion (or releases naturally partway through a push) rather than passing through the door's surface.",
+      "negatives": [
+        "door opening or closing by itself with no hand contact",
+        "hand passing through the door",
+        "door swinging before the hand touches it",
+        "door moving off its hinge line",
+        "instant door position change with no swing"
+      ]
+    },
+    {
+      "key": "picking_up_object",
+      "triggerPattern": "\\b(picks?\\s+up|picking\\s+up|picked\\s+up|bends?\\s+(?:down|over)\\s+(?:and|to)|scoops?\\s+up|scooping\\s+up)\\b",
+      "marker": "Natural pick-up mechanics:",
+      "description": "Natural pick-up mechanics: the body bends at the knees and/or hips to bring the hand down to the object's actual level — never a rigid, straight-backed reach that implausibly stretches the arm to the floor. The fingers spread, make contact with the object, and wrap around it firmly before the object rises; it only leaves the surface once the hand's grip is established. The body straightens back up smoothly as the object comes with it, the hand maintaining a natural, weight-appropriate grip throughout.",
+      "negatives": [
+        "object floating up into the hand with no grip shown",
+        "object lifting before the hand makes contact",
+        "impossibly stiff-legged reach to the ground",
+        "hand passing through the object"
+      ]
+    },
+    {
+      "key": "putting_down_object",
+      "triggerPattern": "\\b(puts?\\s+down|putting\\s+down|placed?\\s+down|sets?\\s+down|setting\\s+down|places?\\s+(?:it|the|him|her)\\s+down)\\b",
+      "marker": "Natural put-down mechanics:",
+      "description": "Natural put-down mechanics: the hand lowers the object under control until it makes solid contact with the surface beneath it, the grip only releasing once the object's weight is fully supported by that surface — never released mid-air. The hand withdraws naturally afterward; the object stays exactly where it was set down, resting stably rather than floating, sinking into, or sliding off the surface.",
+      "negatives": [
+        "object released mid-air before reaching the surface",
+        "object floating just above the surface",
+        "object sinking into or clipping through the surface",
+        "object sliding away after being set down with no cause"
+      ]
+    },
+    {
+      "key": "drinking",
+      "triggerPattern": "\\b(drinks?|drinking|drank|sips?|sipping|sipped|gulps?|gulping|gulped)\\b",
+      "marker": "Natural drinking mechanics:",
+      "description": "Natural drinking mechanics: the hand brings the cup, glass, or bottle up to the mouth at an unhurried, natural speed, tilting it only once it reaches the lips; the head may tilt back very slightly to help the liquid flow. Afterward, the hand lowers the container back toward the table or to waist height rather than freezing in place at mouth level. The throat shows a brief, subtle swallowing motion.",
+      "negatives": [
+        "container floating up to the mouth with no grip",
+        "hand frozen holding the container at the mouth afterward",
+        "no tilt of the container while drinking",
+        "liquid visibly not entering the mouth"
+      ]
+    },
+    {
+      "key": "crying",
+      "triggerPattern": "\\b(cries|crying|cried|sobs?|sobbing|sobbed|tears?\\s+(?:well|welling|stream|streaming))\\b",
+      "marker": "Natural crying mechanics:",
+      "description": "Natural crying mechanics: the face shows real, building emotion — brows knitting together, the mouth and chin trembling or tightening, breathing becoming uneven with small shudders through the chest and shoulders. Tears well up and trail slowly down the cheeks rather than appearing instantly at full volume. A hand may rise to wipe the face or cover the eyes, in a natural, unhurried motion.",
+      "negatives": [
+        "tears appearing instantly with no build-up",
+        "flat expressionless face while supposedly crying",
+        "static face with tears pasted on",
+        "no breathing or shoulder movement during crying"
+      ]
+    },
+    {
+      "key": "laughing",
+      "triggerPattern": "\\b(laughs?|laughing|laughed|chuckles?|chuckling|chuckled|giggles?|giggling|giggled)\\b",
+      "marker": "Natural laughing mechanics:",
+      "description": "Natural laughing mechanics: the mouth spreads into a genuine smile and keeps moving with each burst of laughter, and the shoulders and chest move with real, slightly irregular rhythm — a natural laugh is not perfectly even or mechanical. The head may tilt back slightly or the body lean with the laugh's intensity, settling back to a relaxed expression as the laugh fades rather than ending abruptly.",
+      "negatives": [
+        "static face while supposedly laughing",
+        "mouth not moving during laughter",
+        "perfectly even mechanical shoulder bounce",
+        "laugh that ends abruptly with no fade"
+      ]
+    },
+    {
+      "key": "kissing",
+      "triggerPattern": "\\b(kisses?|kissing|kissed)\\b",
+      "marker": "Natural kissing mechanics:",
+      "description": "Natural kissing mechanics: both people lean in together until their faces meet, heads tilting slightly to opposite sides to avoid a head-on collision. Contact is soft and brief-to-lingering as the scene calls for, hands may come to rest gently on the other person's face, shoulder, or waist. Afterward both people draw back together at an unhurried, natural speed, expressions settling naturally rather than freezing.",
+      "negatives": [
+        "faces merging or clipping through each other",
+        "heads not tilting before contact",
+        "one person's features distorting near the other's face",
+        "instant snap-together with no lean-in"
+      ]
+    },
+    {
+      "key": "turning_pivoting",
+      "triggerPattern": "\\b(turns?|turning|turned|spins?|spinning|spun|pivots?|pivoting|pivoted|wheels?|wheeling|wheeled|whirls?|whirling|whirled)\\b\\s+(?:around|back|to\\s+face|toward|towards|away)\\b",
+      "marker": "Natural turning mechanics:",
+      "description": "Natural turning mechanics: the turn originates from the feet and hips first, the torso and shoulders following a beat behind, and the head arriving last as it looks toward the new direction — never the whole body snapping around as one rigid, simultaneous unit. Weight shifts across the feet as the body rotates, with a small natural step or pivot of the foot to support the turn rather than the feet staying planted while the torso twists past a plausible range. The rotation completes at a natural, continuous speed and settles into a stable stance facing the new direction — it does not overshoot and correct, freeze mid-rotation, or snap instantly to the end pose.",
+      "negatives": [
+        "instant snap turn with no rotation shown",
+        "whole body turning as one rigid unit",
+        "feet staying planted while the torso twists past a natural range",
+        "head arriving before the shoulders",
+        "turn that overshoots and corrects backward"
+      ]
+    },
+    {
+      "key": "kneeling_crouching",
+      "triggerPattern": "\\b(kneels?|kneeling|knelt|crouches?|crouching|crouched|squats?|squatting|squatted|hunkers?\\s+down|hunkering\\s+down)\\b",
+      "marker": "Natural kneeling/crouching mechanics:",
+      "description": "Natural kneeling/crouching mechanics: the body lowers under control — hips and knees bend together, a hand may touch the ground or a nearby surface briefly for balance on the way down, and weight settles fully onto the bent legs (or the down knee) before the pose holds. The descent is smooth and continuous, never an instant drop into position. Coming back up follows the same logic in reverse: weight shifts forward and up through the legs in one continuous motion, not a teleport back to standing.",
+      "negatives": [
+        "instant teleport into a kneeling or crouched pose",
+        "floating down without visible weight transfer",
+        "rigid drop straight onto the knee with no control",
+        "standing back up with no leg extension shown"
+      ]
+    },
+    {
+      "key": "stairs",
+      "triggerPattern": "\\b(?:(?:climbs?|climbing|climbed|ascends?|ascending|descends?|descending|bounds?|bounding|goes?|going|went)\\s+(?:up\\s+|down\\s+)?(?:\\w+\\s+){0,3}(?:stairs?|staircase|steps)|(?:takes?|taking|took)\\s+the\\s+(?:stairs?|steps)|(?:stairs?|staircase|steps)\\s+(?:he|she|they)?\\s*(?:climbs?|climbing|climbed|ascended|descended))\\b",
+      "marker": "Natural stair mechanics:",
+      "description": "Natural stair mechanics: each foot lifts, clears the edge of the next step, and plants fully on its flat surface before weight transfers onto it — one step at a time, in a real alternating rhythm, never a smooth escalator-like glide up or down the incline. Going up, the trailing leg drives the body's weight upward onto the new step; going down, each foot finds the step below before weight commits to it, with a slight controlled bend in the knee to absorb the impact. A hand may brush or grip a railing if one is present. The body's height changes step by step, matching the actual rise of the staircase, never floating along a smooth diagonal path that ignores the individual steps.",
+      "negatives": [
+        "gliding smoothly along the stair incline with no individual steps shown",
+        "feet not contacting each step",
+        "escalator-like floating motion",
+        "body height changing smoothly instead of step by step",
+        "foot passing through a step"
+      ]
+    },
+    {
+      "key": "driving",
+      "triggerPattern": "\\b(steers?|steering|parks?\\s+(?:the|his|her|their)\\s+car|parked\\s+(?:the|his|her|their)\\s+car|(?:drives?|driving|drove)\\s+(?:(?:the|his|her|their|a)\\s+(?:car|truck|vehicle|van|jeep|motorcycle|bike)|down|along|through|off|away|home))\\b",
+      "marker": "Natural driving mechanics:",
+      "description": "Natural driving mechanics: both hands rest on the steering wheel with a relaxed, natural grip, making small continuous steering corrections rather than staying perfectly rigid — no other object (a key, a phone, anything) stays held in either hand once the car is moving, unless the scene specifically stages picking it up. The head turns naturally to check mirrors or a blind spot before a turn, lane change, or pulling away. Steering wheel rotation is smooth and directly proportional to the vehicle's actual turning motion — never a sudden snap of the wheel unrelated to the car's path, and never the car turning while the wheel stays straight. The driver's body sways very slightly with the vehicle's acceleration, braking, and turns, weight shifting naturally in the seat rather than staying perfectly rigid throughout. The car covers real ground — through the windshield and windows, the road, parked cars, buildings and other traffic visibly move past and recede at a speed matching how fast the car is supposed to be going; the scene outside the glass is never static or frozen while the car is described as moving.",
+      "negatives": [
+        "hands floating near the steering wheel with no grip",
+        "steering wheel turning with no corresponding hand movement",
+        "car turning while the steering wheel is held straight",
+        "driver's body perfectly rigid through a turn, stop, or start",
+        "steering wheel rotating independently of the driver's hands",
+        "car moving with no visible driver input at all",
+        "keys or a phone still held in the driving hand while steering",
+        "static background outside the car while the car is supposedly moving",
+        "the road and buildings outside the windshield not moving or receding",
+        "treadmill effect while driving",
+        "the scenery through the window frozen or unchanged",
+        "the car drifting or sliding sideways unless the scene explicitly describes a drift",
+        "rear wheels losing traction and sliding out on an ordinary turn",
+        "sideways skidding through a corner",
+        "tires screeching into an unscripted slide"
+      ]
+    },
+    {
+      "key": "crawling",
+      "triggerPattern": "\\b(crawls?|crawling|crawled)\\b",
+      "marker": "Natural crawling mechanics:",
+      "description": "Natural crawling mechanics: hands and knees (or hands and feet) alternate solid, weight-bearing contact with the ground in a real quadrupedal rhythm — opposite limbs move together, and each new contact point visibly bears weight before the next limb lifts. The torso stays low and roughly parallel to the ground throughout. He/she covers real ground, the background moving past behind them if the camera tracks the motion.",
+      "negatives": [
+        "floating crawl with no ground contact",
+        "limbs moving without visible weight transfer",
+        "gliding along the ground with no alternating rhythm",
+        "torso rising to a standing height mid-crawl with no transition shown"
+      ]
+    },
+    {
+      "key": "swimming",
+      "triggerPattern": "\\b(swims?|swimming|swam|dives?\\s+into\\s+the\\s+water|diving\\s+into\\s+the\\s+water)\\b",
+      "marker": "Natural swimming mechanics:",
+      "description": "Natural swimming mechanics: arms and legs execute a real, continuous stroke cycle against the water's resistance — never gliding motionless through it. Each stroke visibly displaces water (ripples, splashes, a wake trailing behind), and breathing punctuates the rhythm with the head turning to breathe at a natural interval. Forward progress through the water is continuous and matches the effort of the stroke shown.",
+      "negatives": [
+        "gliding through water with no stroke motion",
+        "body moving with no visible water displacement",
+        "static, mirror-flat water surface around a moving swimmer",
+        "limbs passing through the water's surface with no splash"
+      ]
+    },
+    {
+      "key": "cycling",
+      "triggerPattern": "\\b(?:(?:rides?|riding|rode)\\s+(?:a|his|her|their|the)\\s+(?:bike|bicycle|motorcycle)|pedals?|pedalling|pedaling|pedalled|pedaled)\\b",
+      "marker": "Natural cycling mechanics:",
+      "description": "Natural cycling mechanics: hands grip the handlebars steadily, and for a bicycle the legs drive the pedals in a continuous, alternating circular motion — the wheels only turn while the pedaling motion (or an engine, for a motorcycle) is actually driving them. The bike leans naturally into turns together with the rider's body rather than staying perfectly upright through a curve, and the road or ground streams past at a speed that matches how fast the bike is moving.",
+      "negatives": [
+        "pedaling with the bike not actually moving",
+        "bike moving forward while the legs stay stationary",
+        "hands floating off the handlebars",
+        "static background while riding",
+        "bike staying perfectly upright and rigid through a turn"
+      ]
+    },
+    {
+      "key": "carrying_heavy_object",
+      "triggerPattern": "\\b(?:carries?|carrying|carried)\\s+(?:the|a|his|her|their)?\\s*(?:heavy|large|box|crate|bag|suitcase|couch|table|load|luggage)\\b|\\b(?:hauls?|hauling|hauled)\\b",
+      "marker": "Natural carrying mechanics:",
+      "description": "Natural carrying mechanics: the knees bend and the back stays relatively straight as a load is lifted into a carrying position, weight visibly transferring through the legs rather than the spine. Once carried, the body's posture visibly compensates for the object's actual mass — a slight lean, both arms fully engaged and bearing real weight, steps shorter and more deliberate than an ordinary unburdened stride. The object never swings weightlessly, floats free of the grip, or is handled as if it weighed nothing when the scene establishes it as heavy.",
+      "negatives": [
+        "heavy object handled as if weightless",
+        "no bend in the knees when the load is first taken up",
+        "object floating rather than gripped and borne against the body",
+        "carrying posture identical to an unburdened stride",
+        "object swinging with no relation to the carrier's movement"
+      ]
+    },
+    {
+      "key": "pushing_pulling_object",
+      "triggerPattern": "\\b(pushes?|pushing|pushed)\\s+(?:the|a|his|her|their)?\\s*(?:cart|table|chair|crate|box|furniture|couch|it\\s+across)\\b|\\b(drags?|dragging|dragged)\\b|\\bpulls?\\s+(?:the|a|his|her|their)?\\s*(?:cart|table|chair|crate|box|furniture|couch|rope)\\b",
+      "marker": "Natural push/pull mechanics:",
+      "description": "Natural push/pull mechanics: the whole body leans into the effort — weight shifts onto the front foot for a push or the back foot for a pull — and both hands maintain firm, continuous contact with the object throughout. The object's actual resistance is visible: it moves at a real, effortful rate that matches the strain shown, never gliding freely as if weightless. It continues moving only while force is actively applied, and does not coast onward or stop dead the instant contact breaks with no visible cause.",
+      "negatives": [
+        "object gliding effortlessly with no visible strain",
+        "hands floating near the object with no real contact",
+        "object moving faster or smoother than the effort shown",
+        "object continuing to move after the hands release it with no cause",
+        "object stopping instantly while force is still visibly being applied"
+      ]
+    },
+    {
+      "key": "getting_in_out_of_vehicle",
+      "triggerPattern": "\\b(gets?\\s+(?:in|into|out\\s+of)|climbs?\\s+(?:in|into|out\\s+of)|steps?\\s+out\\s+of)\\s+(?:the|a|his|her|their)?\\s*(?:car|vehicle|truck|van)\\b",
+      "marker": "Natural vehicle entry/exit mechanics:",
+      "description": "Natural vehicle entry/exit mechanics: a hand reaches the door handle first, gripping it firmly before the door swings. The body ducks and folds at the hips and knees to lower into or rise out of the seat, one region of the body settling at a time — head and shoulders first, then the torso, then the legs following — never a rigid, straight-backed teleport in or out. Once seated, the door is shut before the vehicle moves; once exiting, both feet find solid ground before the body straightens fully upright.",
+      "negatives": [
+        "body teleporting into or out of the seat with no folding motion",
+        "entering or exiting with the door still shut",
+        "the vehicle moving before the door has closed",
+        "standing fully upright before both feet are on the ground",
+        "limbs passing through the car frame or door"
+      ]
+    },
+    {
+      "key": "phone_use",
+      "triggerPattern": "\\b(texts?|texting|texted|scrolls?|scrolling|scrolled|checks?\\s+(?:his|her|their)\\s+phone|taps?\\s+(?:his|her|their|the)\\s+phone|answers?\\s+(?:the|his|her|their)?\\s*(?:phone|call)|holds?\\s+(?:the|his|her|their)?\\s*phone\\s+(?:to|up\\s+to)\\s+(?:his|her|their)?\\s*ear)\\b",
+      "marker": "Natural phone-use mechanics:",
+      "description": "Natural phone-use mechanics: the phone is held steady in one hand at a natural angle — chest-to-eye height for looking at the screen, or raised flat against the ear for a call. When texting or scrolling, the other hand's thumb or fingers move in small, precise, repeated motions that make real contact with the screen surface; the eyes track down to the screen and back up in sync with the hand's motion. The phone itself stays a fixed, rigid rectangle throughout — it does not warp, resize, or change shape, and it does not float free of whichever hand is holding it.",
+      "negatives": [
+        "fingers moving in the air near the phone with no screen contact",
+        "phone floating without a visible grip",
+        "phone changing shape, size, or orientation on its own",
+        "eyes never looking at the screen while supposedly texting or scrolling",
+        "phone passing through the hand or face"
+      ]
+    },
+    {
+      "key": "writing_signing",
+      "triggerPattern": "\\b(writes?|writing|wrote|signs?\\s+(?:the|a|his|her)|signing\\s+(?:the|a|his|her)|jots?\\s+down|jotting\\s+down)\\b",
+      "marker": "Natural writing mechanics:",
+      "description": "Natural writing mechanics: the writing hand grips a pen or pencil in a natural tripod hold, the wrist and fingers making small, controlled, continuous motion tracing real strokes across the visible surface. The pen tip stays in contact with the paper throughout each stroke, lifting only briefly between words or letters. The other hand steadies the paper or surface. Whether legible or not, the marks left behind visibly correspond to the hand's actual path across the page.",
+      "negatives": [
+        "pen floating above the paper with no contact",
+        "hand moving with no marks appearing on the page",
+        "marks appearing that don't correspond to the hand's actual path",
+        "pen passing through the paper's surface"
+      ]
+    },
+    {
+      "key": "typing",
+      "triggerPattern": "\\b(types?|typing|typed)\\s+(?:on|at)\\s+(?:the|a|his|her|their)?\\s*(?:keyboard|laptop|computer)\\b",
+      "marker": "Natural typing mechanics:",
+      "description": "Natural typing mechanics: fingers tap individual keys in a real, staggered rhythm — not every finger moving in unison — each keystroke a small, discrete downward press before the finger lifts clear again. The hands stay positioned over the keyboard with the wrists roughly level; the eyes may glance between the screen and the keys. Any change to the screen's content happens in sync with the typing rhythm, never before it or unrelated to it.",
+      "negatives": [
+        "fingers hovering above the keys with no contact",
+        "all fingers moving identically at the same instant",
+        "screen content changing with no corresponding keystrokes",
+        "hands passing through the keyboard"
+      ]
+    },
+    {
+      "key": "cutting_chopping",
+      "triggerPattern": "\\b(cuts?|cutting|slices?|slicing|sliced|chops?|chopping|chopped)\\b",
+      "marker": "Natural cutting mechanics:",
+      "description": "Natural cutting mechanics: the non-cutting hand holds the item steady with its fingers curled back and away from the blade's actual path, clear of the line of the cut. The cutting hand grips the knife firmly and drives it down and through the item in a real, controlled stroke — the blade making solid, visible contact and the item visibly separating or yielding under the cut. The knife lifts fully clear before the next stroke, and successive strokes repeat at a steady, real rhythm.",
+      "negatives": [
+        "knife passing through the item with no visible separation",
+        "fingers left directly in the blade's path",
+        "knife floating without a firm grip",
+        "cutting motion repeated with the item completely unaffected"
+      ]
+    },
+    {
+      "key": "pouring_stirring",
+      "triggerPattern": "\\b(pours?|pouring|poured|stirs?|stirring|stirred)\\b",
+      "marker": "Natural pouring/stirring mechanics:",
+      "description": "Natural pouring/stirring mechanics: for pouring, the container tilts at a controlled, gradually increasing angle and the liquid streams out in a continuous, visible flow under gravity into the target vessel — the pour ends as the container returns upright, not by the liquid simply vanishing mid-air. For stirring, the utensil stays in continuous contact with the contents, tracing a real circular or back-and-forth path, and the contents visibly move in response to it.",
+      "negatives": [
+        "liquid appearing already in the target vessel with no visible pour",
+        "liquid streaming in a rigid straight line ignoring gravity",
+        "stirring utensil moving with no visible effect on the contents",
+        "utensil floating above the contents with no contact"
+      ]
+    },
+    {
+      "key": "washing",
+      "triggerPattern": "\\b(washes?|washing|washed)\\s+(?:his|her|their)?\\s*(?:hands?|face|dishes?|the\\s+dishes)\\b",
+      "marker": "Natural washing mechanics:",
+      "description": "Natural washing mechanics: the hands (or the object being washed) make continuous contact with flowing water or a wet surface, rubbing together or against the surface in a real, repeated motion; water visibly streams, splashes, or drips as a natural consequence of that contact. Afterward the hands or object are visibly wet, and a towel or a shake-off motion may follow.",
+      "negatives": [
+        "hands moving near water with no contact or resulting wetness",
+        "water appearing frozen or static during the washing motion",
+        "no visible change in wetness after washing",
+        "hands passing through the water without displacing it"
+      ]
+    },
+    {
+      "key": "dressing_undressing",
+      "triggerPattern": "\\b(?:puts?\\s+on|putting\\s+on|takes?\\s+off|taking\\s+off|zips?\\s+up|zipping\\s+up|buttons?\\s+up|buttoning\\s+up)\\s+(?:his|her|their|a|the)?\\s*(?:jacket|coat|shoes?|shirt|sweater|scarf|gloves?|hat)\\b",
+      "marker": "Natural dressing mechanics:",
+      "description": "Natural dressing mechanics: the garment is handled with real weight and resistance — an arm threads through a sleeve one limb at a time, the fabric visibly bunching and settling against the body as it goes on, or peeling away from it as it comes off. A zipper or button is worked with small, precise finger movements at the actual fastening point. The garment's position on the body changes gradually and continuously — it never snaps instantly from off to on, or the reverse.",
+      "negatives": [
+        "garment snapping instantly onto or off the body",
+        "clothing changing state with no visible limb movement through it",
+        "fingers not making contact with a zipper or button being worked",
+        "garment floating without visible weight or resistance"
+      ]
+    },
+    {
+      "key": "knocking_doorbell",
+      "triggerPattern": "\\b(knocks?|knocking|knocked)\\s+(?:on|at)\\s+(?:the|a)\\s+door|rings?\\s+(?:the\\s+)?doorbell|ringing\\s+the\\s+doorbell\\b",
+      "marker": "Natural knocking mechanics:",
+      "description": "Natural knocking mechanics: the hand forms a loose fist and makes two or three brief, real raps against the door surface at a consistent spot, each knuckle contact producing a slight, visible pull-back of the hand — or for a doorbell, one finger presses the button briefly and withdraws. The motion is discrete and repeated, not a single continuous rub or press.",
+      "negatives": [
+        "hand passing through the door while knocking",
+        "no visible contact on each knock",
+        "knocking rendered as one continuous motion instead of discrete raps",
+        "finger stuck to the doorbell button"
+      ]
+    },
+    {
+      "key": "shaking_hands",
+      "triggerPattern": "\\b(shakes?|shaking|shook)\\s+(?:his|her|their)?\\s*hands?\\b|handshake",
+      "marker": "Natural handshake mechanics:",
+      "description": "Natural handshake mechanics: both people extend a hand toward the other, palms meeting and fingers closing around the other's hand in a firm, mutual grip, followed by two or three brief up-and-down pumps of the joined hands, before both release together and withdraw.",
+      "negatives": [
+        "hands passing through each other",
+        "one hand gripping empty air with no contact",
+        "no visible grip at the point of contact",
+        "hands merging into a single shape"
+      ]
+    },
+    {
+      "key": "waving",
+      "triggerPattern": "\\b(waves?|waving|waved)\\s+(?:his|her|their)?\\s*(?:hand|goodbye|hello)\\b",
+      "marker": "Natural waving mechanics:",
+      "description": "Natural waving mechanics: the arm raises and the hand moves in a real, repeated side-to-side or open-close motion at the wrist — a clear, distinct greeting or farewell gesture, not a single static raised hand held motionless.",
+      "negatives": [
+        "hand raised and frozen with no wave motion",
+        "arm moving while the hand itself stays rigid",
+        "wave with no clear repeated back-and-forth motion"
+      ]
+    },
+    {
+      "key": "pointing",
+      "triggerPattern": "\\b(points?|pointing|pointed)\\s+(?:at|to|toward|towards)\\b",
+      "marker": "Natural pointing mechanics:",
+      "description": "Natural pointing mechanics: the arm extends in a clear, deliberate line from the shoulder toward the target, the index finger leading with the other fingers curled naturally against the palm. The gesture holds briefly at full extension before the arm relaxes and lowers back down.",
+      "negatives": [
+        "pointing gesture with no clearly extended arm",
+        "finger direction not matching the stated target",
+        "arm frozen at an ambiguous, unreadable angle"
+      ]
+    },
+    {
+      "key": "nodding_shaking_head",
+      "triggerPattern": "\\b(nods?|nodding|nodded|shakes?\\s+(?:his|her|their)?\\s*head|shaking\\s+(?:his|her|their)?\\s*head)\\b",
+      "marker": "Natural head-gesture mechanics:",
+      "description": "Natural head-gesture mechanics: for a nod, the chin dips down and rises back to level in one or two clear, deliberate repetitions. For a head shake, the head rotates a real, short distance left and right, alternating two or three times around the neck's natural pivot. Both are small, quick, unmistakable gestures — not a head that stays static despite the stated motion.",
+      "negatives": [
+        "head remaining static despite a stated nod or shake",
+        "motion too subtle or slow to read as the intended gesture",
+        "unnatural continuous spinning instead of a discrete back-and-forth"
+      ]
+    },
+    {
+      "key": "shrugging",
+      "triggerPattern": "\\b(shrugs?|shrugging|shrugged)\\b",
+      "marker": "Natural shrugging mechanics:",
+      "description": "Natural shrugging mechanics: both shoulders rise together toward the ears in one brief, natural motion, often paired with the palms turning slightly outward and the head tilting a little, then the shoulders drop back to their resting position — a quick, clear gesture, not a held, static pose.",
+      "negatives": [
+        "shoulders remaining level despite a stated shrug",
+        "shrug held indefinitely with no drop back to resting position",
+        "only one shoulder moving"
+      ]
+    },
+    {
+      "key": "sighing_yawning_gasping",
+      "triggerPattern": "\\b(sighs?|sighing|sighed|yawns?|yawning|yawned|gasps?|gasping|gasped)\\b",
+      "marker": "Natural breath-gesture mechanics:",
+      "description": "Natural breath-gesture mechanics: the chest visibly expands as a real breath is drawn in. For a sigh, it holds briefly and the shoulders drop as the breath releases. For a yawn, the mouth opens wide and gradually, often with the head tilting back slightly, before closing again. For a gasp, the intake is sudden and sharp, the mouth opening quickly with a slight jolt through the shoulders or chest. Each is a distinct, visible breath motion, not a static face with only an expression change.",
+      "negatives": [
+        "no visible chest or breathing motion during a stated sigh, gasp, or yawn",
+        "mouth remaining closed during a stated yawn",
+        "breath motion that looks identical regardless of which gesture is described"
+      ]
+    },
+    {
+      "key": "flinching_startling",
+      "triggerPattern": "\\b(flinches?|flinching|flinched|startles?|startling|startled|jumps?\\s+back)\\b",
+      "marker": "Natural flinch/startle mechanics:",
+      "description": "Natural flinch/startle mechanics: the reaction is sudden and involuntary — the shoulders jerk up and inward, the head pulls back, and the body may shift a small, involuntary step or lean away from the stimulus, before settling back into a more composed posture a beat later. The initial jolt is distinctly faster than the settle that follows it.",
+      "negatives": [
+        "no visible reaction to a stated flinch or startle",
+        "reaction that is slow and gradual instead of sudden",
+        "body remaining rigid and unmoved despite the stated gesture"
+      ]
+    },
+    {
+      "key": "leaning_resting_against",
+      "triggerPattern": "\\b(leans?|leaning|leaned)\\s+(?:against|on)\\b",
+      "marker": "Natural leaning mechanics:",
+      "description": "Natural leaning mechanics: the body's weight visibly transfers onto the surface being leaned against — a shoulder, back, or hand makes solid, weight-bearing contact, and the posture noticeably relaxes or angles into that support rather than hovering just short of it. The contact point stays fixed and stable for the duration of the lean.",
+      "negatives": [
+        "body appearing to lean with a visible gap to the surface",
+        "no change in posture or weight distribution",
+        "contact point sliding or drifting with no cause"
+      ]
+    },
+    {
+      "key": "stretching",
+      "triggerPattern": "\\b(stretches?|stretching|stretched)\\s+(?:his|her|their)?\\s*(?:arms?|body|back|legs?)\\b",
+      "marker": "Natural stretching mechanics:",
+      "description": "Natural stretching mechanics: the limb or torso extends fully and holds briefly at the point of full extension — arms reaching overhead or out to the sides, the back arching slightly, or legs extending — building to that extension gradually rather than snapping there instantly, then releasing back to a neutral, relaxed posture in a controlled motion.",
+      "negatives": [
+        "instant snap into a fully stretched pose",
+        "no release back to a neutral posture afterward",
+        "rigid held pose with no gradual build to the extension"
+      ]
+    },
+    {
+      "key": "lying_down_getting_up",
+      "triggerPattern": "\\b(lies?\\s+down|lying\\s+down|lay\\s+down|gets?\\s+up\\s+from\\s+(?:the\\s+)?(?:ground|floor|bed)|rolls?\\s+over)\\b",
+      "marker": "Natural lying-down/rising mechanics:",
+      "description": "Natural lying-down/rising mechanics: lowering to the ground or a bed follows a real, controlled sequence — knees bend, a hand or forearm braces against the surface, and the body settles down one section at a time (hips, then torso, then reclining fully) rather than dropping flat instantly. Rising follows the reverse: a hand or forearm presses into the surface for leverage, the torso lifts first, then the hips and legs drive the body upright in stages — never a straight-backed teleport from flat to standing.",
+      "negatives": [
+        "body dropping flat instantly with no controlled descent",
+        "teleporting from lying to standing with no intermediate stages",
+        "no hand or arm bracing against the surface during the transition"
+      ]
+    },
+    {
+      "key": "carrying_a_person",
+      "triggerPattern": "\\bcarries?\\s+(?:him|her|them)\\s+(?:in\\s+(?:his|her|their)\\s+arms|on\\s+(?:his|her|their)\\s+back)|piggyback",
+      "marker": "Natural person-carrying mechanics:",
+      "description": "Natural person-carrying mechanics: the carrier braces with bent knees before taking the other person's full weight, arms wrapping securely under the legs and around the back (or the carried person settling onto the back for a piggyback, arms around the carrier's shoulders). The carried person's body visibly sags and settles under real gravity into the hold — it does not stay rigid or float independently of the carrier's grip. The carrier's gait becomes visibly slower and more effortful than an ordinary unburdened stride, weight shifting deliberately with each step.",
+      "negatives": [
+        "carried person floating independently of the carrier's grip",
+        "no visible strain or change of gait while carrying another person's full weight",
+        "carried person's limbs passing through the carrier's body",
+        "person taken up with no bracing or bent-knee lift"
+      ]
+    },
+    {
+      "key": "drawing_aiming_weapon",
+      "triggerPattern": "\\b(draws?|drawing|drew)\\s+(?:his|her|their|a)\\s+(?:gun|pistol|weapon)|aims?\\s+(?:his|her|their|a)?\\s*(?:gun|pistol|weapon)|aiming\\s+(?:his|her|their|a)?\\s*(?:gun|pistol|weapon)|(?:fires?|firing|fired)\\s+(?:his|her|their|a)?\\s*(?:gun|pistol|weapon)\\b",
+      "marker": "Natural weapon-handling mechanics:",
+      "description": "Natural weapon-handling mechanics: the drawing hand moves in one fluid, practiced motion to the weapon's actual holstered or held position, grips it fully, and brings it up into a stable stance, arms extending toward the target without wavering. On firing, the weapon and the hands holding it visibly jolt backward and slightly upward with the shot, the body absorbing that force through the arms and shoulders before the stance resets. The weapon's position in the hand stays fixed and consistent — it never floats free of the grip or changes hands with no cause shown.",
+      "negatives": [
+        "weapon firing with no visible kickback",
+        "gun floating in the hand with no firm grip",
+        "aim pointed in a different direction than the stated target",
+        "weapon appearing already drawn and aimed with no drawing motion shown",
+        "weapon changing hands or position with no visible cause"
+      ]
+    },
+    {
+      "key": "smoking",
+      "triggerPattern": "\\b(smokes?|smoking|smoked)\\s+(?:a\\s+)?cigarette|lights?\\s+(?:a|the)\\s+cigarette|lighting\\s+(?:a|the)\\s+cigarette\\b",
+      "marker": "Natural smoking mechanics:",
+      "description": "Natural smoking mechanics: a hand brings the cigarette to the lips, holding it steady with the fingers as a lighter or match is sparked with the other hand, the flame making brief, visible contact with the tip. A visible draw follows — the cheeks hollow slightly — then the cigarette lowers away from the mouth as a slow exhale of smoke follows, the smoke dispersing naturally rather than appearing as an instant, static cloud.",
+      "negatives": [
+        "smoke appearing instantly as a frozen, static cloud",
+        "cigarette floating near the lips with no grip",
+        "no visible ignition contact between the flame and the cigarette",
+        "cigarette remaining in the mouth with no hand involvement at any point"
+      ]
+    },
+    {
+      "key": "searching_rummaging",
+      "triggerPattern": "\\b(searches?|searching|searched)\\s+(?:through|for)|rummages?|rummaging|rummaged|digs?\\s+through|digging\\s+through\\b",
+      "marker": "Natural searching mechanics:",
+      "description": "Natural searching mechanics: the hand or hands move actively through the contents of a bag, drawer, or pile — items visibly shift, are pushed aside, or lifted and repositioned as the search continues, the hand's motion tracking realistically with what it disturbs. The search ends decisively: either the hand grips the found item and withdraws it, or the body straightens with a clear empty-handed reaction — it does not trail off unresolved with the last frame frozen mid-motion.",
+      "negatives": [
+        "hand hovering over contents with nothing visibly shifting",
+        "search motion with no interaction with the container's actual contents",
+        "search ending abruptly mid-motion with no resolution shown"
+      ]
+    },
+    {
+      "key": "catching",
+      "triggerPattern": "\\b(catches?|catching|caught)\\b",
+      "marker": "Natural catching mechanics:",
+      "description": "Natural catching mechanics: the eyes track the incoming object's path, and the hands rise and open to meet its trajectory just before contact, fingers closing around it decisively at the moment of impact — absorbing its momentum by giving slightly with the catch rather than stopping it rigidly dead. The body may shift a small step to align with the object's actual path.",
+      "negatives": [
+        "object appearing already in the hand with no catching motion shown",
+        "hands stationary while the object's path bends to meet them",
+        "catch with no give or momentum absorption on contact",
+        "hands closing before the object has actually arrived"
+      ]
+    },
+    {
+      "key": "dancing",
+      "triggerPattern": "\\b(dances?|dancing|danced)\\b",
+      "marker": "Natural dancing mechanics:",
+      "description": "Natural dancing mechanics: the whole body moves in a continuous, weighted rhythm — hips, shoulders, and feet shifting together rather than only the arms waving while the lower body stays planted. Steps land with real weight transfer and recognizable beat-driven timing, not a smooth, gravity-free glide. Partners, if any, maintain believable contact points (joined hands, a hand at the waist) that move together rather than drifting independently.",
+      "negatives": [
+        "upper body dancing while the feet stay planted and lifeless",
+        "gliding motion with no weight transfer on each step",
+        "movement with no discernible rhythm or beat",
+        "dance partners' contact points drifting apart or passing through each other"
+      ]
+    },
+    {
+      "key": "clapping_applauding",
+      "triggerPattern": "\\b(claps?|clapping|clapped|applauds?|applauding|applauded)\\b",
+      "marker": "Natural clapping mechanics:",
+      "description": "Natural clapping mechanics: both palms meet with real, repeated contact at a steady rhythm, each clap a distinct impact rather than hands hovering near each other without touching. The hands separate fully between claps rather than staying pressed together.",
+      "negatives": [
+        "hands clapping with no visible contact between palms",
+        "hands remaining pressed together instead of separating between claps",
+        "clapping motion with no consistent rhythm"
+      ]
+    },
+    {
+      "key": "whispering",
+      "triggerPattern": "\\b(whispers?|whispering|whispered)\\b",
+      "marker": "Natural whispering mechanics:",
+      "description": "Natural whispering mechanics: the mouth moves in smaller, more restrained shapes than normal speech — lips barely parting, jaw movement minimal — often leaning in closer to the listener with body language noticeably more contained and secretive than ordinary conversation. The mouth still moves in clear sync with each word; a whisper is quieter, not motionless.",
+      "negatives": [
+        "mouth staying static as if whispering requires no movement",
+        "full wide-open mouth movement identical to normal or raised-volume speech",
+        "no lean-in or change in proximity for a whispered exchange"
+      ]
+    },
+    {
+      "key": "coughing_sneezing",
+      "triggerPattern": "\\b(coughs?|coughing|coughed|sneezes?|sneezing|sneezed)\\b",
+      "marker": "Natural cough/sneeze mechanics:",
+      "description": "Natural cough/sneeze mechanics: the torso jolts forward or hunches with a sudden, sharp muscular contraction, a hand or the crook of an elbow often rising to cover the mouth just before the release. A cough is one or several short sharp bursts; a sneeze builds with a brief head-tilt-back anticipation before snapping forward on release. The body settles and straightens again afterward rather than freezing mid-contraction.",
+      "negatives": [
+        "no visible torso or chest movement during a stated cough or sneeze",
+        "a sneeze with no anticipatory build before release",
+        "body remaining perfectly still and upright throughout",
+        "hand or arm passing through the face instead of covering it"
+      ]
+    },
+    {
+      "key": "limping_injured_walk",
+      "triggerPattern": "\\b(limps?|limping|limped|hobbles?|hobbling|hobbled|favou?rs?\\s+(?:his|her|their)\\s+(?:leg|ankle|foot))\\b",
+      "marker": "Natural limping/injured-gait mechanics:",
+      "description": "Natural limping/injured-gait mechanics: weight noticeably avoids or shortens time spent on the injured leg — that step lands lighter and quicker, the good leg compensating with a longer, more weight-bearing stride. The gait is visibly asymmetric and uneven in rhythm, often with a slight overall lean away from the injured side, never a smooth, symmetric walk that happens to be slightly slower.",
+      "negatives": [
+        "a smooth, symmetric walking gait despite a stated limp or injury",
+        "even, identical weight-bearing on both legs",
+        "no change in stride rhythm between the injured and uninjured side"
+      ]
+    },
+    {
+      "key": "waking_falling_asleep",
+      "triggerPattern": "\\b(wakes?\\s+up|waking\\s+up|woke\\s+up|falls?\\s+asleep|falling\\s+asleep|fell\\s+asleep|drifts?\\s+off\\s+to\\s+sleep)\\b",
+      "marker": "Natural waking/falling-asleep mechanics:",
+      "description": "Natural waking/falling-asleep mechanics: waking is gradual — the eyes flutter and squint against light before fully opening, the body stirs and repositions before any deliberate movement begins, and full alertness arrives a beat after the eyes first open, not instantly. Falling asleep is the reverse: eyelids grow heavy and close slower each time, the body's tension visibly drains and settles into stillness, breathing lengthens and slows — never an instant cut from fully alert to motionless sleep.",
+      "negatives": [
+        "eyes snapping fully open with instant alertness on waking",
+        "falling asleep instantly with no gradual eyelid heaviness or settling",
+        "no stirring or repositioning of the body during waking",
+        "breathing pattern staying identical whether awake or newly asleep"
+      ]
+    },
+    {
+      "key": "vomiting",
+      "triggerPattern": "\\b(vomits?|vomiting|vomited|retches?|retching|retched)\\b",
+      "marker": "Natural vomiting mechanics:",
+      "description": "Natural vomiting mechanics: the torso pitches forward and doubles over from a real, involuntary abdominal contraction, one or both hands often bracing against a nearby surface or the knees for support. The heave is a sudden, sharp, distinct spasm — not a smooth or graceful motion — often repeating in two or three waves rather than a single continuous action. Afterward the body sags, breathing hard, before straightening back up.",
+      "negatives": ["a smooth, controlled motion instead of a sharp involuntary spasm", "no torso contraction or doubling over", "the body straightening back up instantly with no aftermath", "a single motion with no repeated heaving wave"]
+    },
+    {
+      "key": "fainting_collapsing",
+      "triggerPattern": "\\b(faints?|fainting|fainted|passes?\\s+out|passing\\s+out|blacks?\\s+out|blacking\\s+out)\\b",
+      "marker": "Natural fainting mechanics:",
+      "description": "Natural fainting mechanics: the eyes lose focus or roll back and the body loses all muscular tension at once — unlike a trip or stumble, there is no attempt to catch or brace against the fall. The body goes fully limp and drops under its own dead weight, folding or crumpling to the ground rather than a controlled descent. No hands come out to break the fall.",
+      "negatives": ["hands or arms reaching out to break the fall during a faint", "a controlled, braced descent instead of a limp collapse", "the body staying tense or partially supported while fainting", "eyes remaining alert and focused during a faint"]
+    },
+    {
+      "key": "sneaking_tiptoeing",
+      "triggerPattern": "\\b(sneaks?|sneaking|sneaked|tiptoes?|tiptoeing|tiptoed|creeps?|creeping|crept)\\b",
+      "marker": "Natural sneaking mechanics:",
+      "description": "Natural sneaking mechanics: steps land toe-first rather than heel-first, weight shifting onto each foot slowly and deliberately before fully committing to it, ready to reverse instantly if something goes wrong. The body stays slightly crouched and close in, arms held near the torso rather than swinging freely, and the head turns frequently to check surroundings. Movement is noticeably slower and more careful than an ordinary walk, never casual or relaxed.",
+      "negatives": ["a normal relaxed walking gait during a stated sneak", "heel-first footfalls while sneaking", "arms swinging freely and loosely", "no checking or awareness of surroundings while sneaking"]
+    },
+    {
+      "key": "playing_instrument",
+      "triggerPattern": "\\b(plays?|playing|played)\\s+(?:the\\s+)?(?:guitar|piano|violin|drums?|saxophone|trumpet|flute|cello)\\b",
+      "marker": "Natural instrument-playing mechanics:",
+      "description": "Natural instrument-playing mechanics: the hands move with small, precise, repeated motions specific to the instrument — fingers pressing strings or keys, a hand strumming or bowing, in a real rhythm that visibly corresponds to the implied music rather than vague hovering. The body may sway or the head nod slightly with the rhythm. Posture and hand position stay anatomically correct for the instrument named, and any produced sound cue in the scene stays in sync with the visible hand movement.",
+      "negatives": ["hands hovering near the instrument with no real contact or motion", "finger movement with no rhythm or repetition", "posture inconsistent with actually playing the named instrument", "static hands while the instrument is supposedly being played"]
+    },
+    {
+      "key": "shaving",
+      "triggerPattern": "\\b(shaves?|shaving|shaved)\\b",
+      "marker": "Natural shaving mechanics:",
+      "description": "Natural shaving mechanics: one hand holds the skin taut while the other draws the razor in short, controlled strokes along the direction of growth, pausing between strokes to rinse or wipe the blade. The head or chin tilts to present each area being shaved. Lather or visible stubble is removed strip by strip as the razor passes — the shaved area visibly changes, it does not simply appear finished.",
+      "negatives": ["razor floating near the face with no contact or grip", "shaved area appearing instantly clean with no visible stroke-by-stroke progress", "no skin-tautening hand or head tilt", "razor strokes with no pause to rinse or wipe"]
+    },
+    {
+      "key": "applying_makeup",
+      "triggerPattern": "\\b(applies?|applying|applied)\\s+(?:her|his|their)?\\s*(?:makeup|lipstick|mascara|eyeliner|foundation)\\b",
+      "marker": "Natural makeup-application mechanics:",
+      "description": "Natural makeup-application mechanics: small, precise, repeated hand motions apply product to a specific area — a brush dabbing, a lipstick tracing the lip line, fingers blending — often with the head tilted toward a mirror and the mouth or eyes doing an unconscious small shape (an open mouth for mascara, pursed lips for lipstick) that real application naturally produces. Product visibly transfers and builds up on the skin as the motion repeats.",
+      "negatives": ["makeup appearing instantly with no visible application motion", "the applicator floating near the face with no real contact", "no small unconscious facial shape accompanying the application", "identical finished makeup from the very first frame"]
+    },
+    {
+      "key": "brushing_hair_teeth",
+      "triggerPattern": "\\b(brushes?|brushing|brushed)\\s+(?:his|her|their)?\\s*(?:hair|teeth)\\b",
+      "marker": "Natural brushing mechanics:",
+      "description": "Natural brushing mechanics: the brush or toothbrush moves in real, repeated strokes along its actual path — through the hair from root toward the ends, or back-and-forth/circular motion across the teeth — with visible resistance and effect (tangles working loose, motion at the wrist). The other hand may steady the head or hold hair in place. The stroke count is more than one or two; it is a sustained, repeated action, not a single symbolic pass.",
+      "negatives": ["a single symbolic brush stroke instead of a sustained repeated motion", "the brush passing through hair or across teeth with no visible resistance or effect", "brush floating near the head with no real contact", "hair or teeth appearing already finished with no visible brushing motion"]
+    },
+    {
+      "key": "tying_knot_laces",
+      "triggerPattern": "\\b(ties?|tying|tied)\\s+(?:his|her|their)?\\s*(?:shoelaces?|laces?|knot|tie|necktie|bow)\\b",
+      "marker": "Natural tying mechanics:",
+      "description": "Natural tying mechanics: both hands work together with small, precise, coordinated finger movements — looping, crossing, and pulling the material through in a real sequence of distinct steps, not one continuous vague motion. The material visibly changes shape and tightens as the knot forms. The hands finish by pulling the completed knot snug, a small distinct tug that visibly seats it.",
+      "negatives": ["a knot or tied bow appearing instantly with no visible looping or crossing motion", "hands moving with no coordination or visible effect on the material", "the material remaining loose or unchanged despite a stated tying action", "no final tightening tug"]
+    },
+    {
+      "key": "using_hand_tool",
+      "triggerPattern": "\\b(hammers?|hammering|hammered|screws?\\s+in|screwing\\s+in|saws?|sawing|sawed|drills?|drilling|drilled)\\b",
+      "marker": "Natural hand-tool mechanics:",
+      "description": "Natural hand-tool mechanics: the tool is gripped firmly and moves through its real mechanical action — a hammer rising and driving down with real swing and impact, a saw moving back and forth with visible resistance against the material, a drill's bit spinning with the tool held steady against the surface. Each strike or pass has a visible effect (the nail sinking further, sawdust appearing, a hole deepening) and the tool-holding hand shows real effort and small recoil or vibration on contact.",
+      "negatives": ["the tool moving with no visible contact or effect on the material", "no recoil, vibration, or effort shown on impact", "repeated identical motion with the material completely unaffected", "tool floating without a firm grip"]
+    },
+    {
+      "key": "praying",
+      "triggerPattern": "\\b(prays?|praying|prayed)\\b",
+      "marker": "Natural praying mechanics:",
+      "description": "Natural praying mechanics: the hands come together or fold, head bows, and the body stills into a quiet, contained posture markedly calmer than the character's surrounding behavior — eyes often close, lips may move slightly and silently. The stillness is deliberate and sustained, not a brief pause, and the posture holds until the prayer beat visibly ends.",
+      "negatives": ["restless or fidgeting movement during a stated prayer", "no change in posture or stillness from the surrounding scene", "hands remaining active or unfolded during prayer", "the prayer beat ending with no visible closing movement"]
+    },
+    {
+      "key": "bowing",
+      "triggerPattern": "\\b(bows?|bowing|bowed)\\b",
+      "marker": "Natural bowing mechanics:",
+      "description": "Natural bowing mechanics: the torso hinges forward from the waist or the head dips, the depth and hold time matching the level of respect or formality implied — a small nod-bow is quick, a deep formal bow holds for a visible beat before straightening. The motion is controlled and deliberate, arms often at the sides or clasped, never a rushed or careless dip.",
+      "negatives": ["an instant snap into a bowed position with no controlled hinge", "no hold at the bow's lowest point when a deep or formal bow is described", "a rushed, careless motion for a respectful or formal bow", "the body not returning upright after the bow completes"]
+    },
+    {
+      "key": "saluting",
+      "triggerPattern": "\\b(salutes?|saluting|saluted)\\b",
+      "marker": "Natural saluting mechanics:",
+      "description": "Natural saluting mechanics: the arm raises in one clean, deliberate motion, the hand reaching a precise, held position (typically at the brow), the body simultaneously straightening into a formal, squared-off posture. The salute holds for a visible beat before the arm lowers in an equally controlled motion — never a casual half-gesture or an instant snap with no hold.",
+      "negatives": ["a casual or half-formed salute gesture", "no hold at the top of the salute", "the arm snapping to position with no controlled rise", "posture staying relaxed instead of squaring off for the salute"]
+    },
+    {
+      "key": "taking_photo",
+      "triggerPattern": "\\b(takes?|taking|took)\\s+(?:a\\s+)?(?:photo|picture|selfie)\\b|photographs?\\s+(?:it|him|her|them)\\b",
+      "marker": "Natural photo-taking mechanics:",
+      "description": "Natural photo-taking mechanics: the phone or camera is raised to eye level with a real, controlled hand motion, held briefly steady while framing, and a small distinct motion (a tap, a button press, a slight full-body pause) marks the moment of capture. The device lowers again afterward. For a selfie, the arm extends outward and the head/body angles toward the lens.",
+      "negatives": ["the camera or phone appearing already raised with no motion shown getting there", "no distinct capture moment or pause while framing", "the device floating with no real grip", "the arm not extending for a stated selfie"]
+    },
+    {
+      "key": "holding_baby",
+      "triggerPattern": "\\b(holds?|holding|held|cradles?|cradling|cradled)\\s+(?:the|a|his|her|their)?\\s*(?:baby|infant|newborn)\\b",
+      "marker": "Natural baby-holding mechanics:",
+      "description": "Natural baby-holding mechanics: one arm supports the baby's body while the other hand or forearm supports the head and neck, the carrier's own posture adjusting — arms curling inward, a slight rocking sway — to bear the real, deliberate weight and fragility being handled. Movements around the baby are visibly slower, gentler, and more controlled than the carrier's ordinary movement, with the baby's head never left unsupported.",
+      "negatives": ["the baby's head left unsupported", "the baby handled with the same speed and force as an ordinary object", "no visible weight or postural adjustment from carrying the baby", "stiff, rigid arms with no gentle rocking or cradling motion"]
+    },
+    {
+      "key": "diving_from_height",
+      "triggerPattern": "\\b(dives?|diving|dived)\\s+(?:off|from)\\s+(?:the\\s+)?(?:board|platform|cliff|ledge|high)\\b",
+      "marker": "Natural diving-from-height mechanics:",
+      "description": "Natural diving-from-height mechanics: the body crouches and springs upward and outward in one explosive push-off, arms extending overhead or forward to lead the dive, the body arching into a controlled aerial line before entry. The entry itself is a real, deliberate shape (hands or head leading, body straightening) matched to how far the fall actually is — never a limp, uncontrolled tumble unless the scene specifically calls for a bad or panicked dive.",
+      "negatives": ["no crouch or push-off before the dive", "a limp, uncontrolled tumble for an intentional, controlled dive", "the body remaining flat or unshaped through the air", "an instant teleport from the platform to the water with no aerial phase shown"]
+    },
+    {
+      "key": "using_mobility_aid",
+      "triggerPattern": "\\b(wheelchair|crutches?)\\b",
+      "marker": "Natural mobility-aid mechanics:",
+      "description": "Natural mobility-aid mechanics: for a wheelchair, the hands grip and push the wheels in a real, repeated propulsion motion, the chair's speed and turning matching the visible effort of each push — never gliding with no hand contact. For crutches, the arms bear real weight through the handles with each step, the supported leg or foot swinging clear of the ground in sync with the crutch placement, the gait visibly effortful and rhythmic rather than a normal walking stride.",
+      "negatives": ["a wheelchair moving with no visible hand contact or push motion on the wheels", "crutches used with no real weight-bearing through the arms", "a mobility-aid gait identical to an ordinary unaided walking stride", "the wheelchair or crutches floating or moving independently of the person"]
+    },
+    {
+      "key": "toasting_drinks",
+      "triggerPattern": "\\b(toasts?|toasting|clinks?\\s+glasses|raises?\\s+(?:a|his|her|their)\\s+glass)\\b",
+      "marker": "Natural toasting mechanics:",
+      "description": "Natural toasting mechanics: glasses raise to roughly chest-to-eye height and come together with a real, brief point of contact — an audible-reading clink — before each person draws their glass back toward themselves to drink. The motion is unhurried and shared, with eye contact often exchanged at the moment of the clink.",
+      "negatives": ["glasses raised with no actual contact between them", "the toast motion happening with no pause or eye contact", "a glass floating with no visible grip", "drinking beginning before the glasses actually meet"]
+    }
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "note": "Same architecture as LIGHTING_LIBRARY.json, applied to FACIAL/BODY REACTION PHYSIOLOGY instead of light. The LLM breakdown writes a generic reaction label ('he looks shocked', 'she gasps') and leaves the video model to render the single most common AI-video reaction tell: an INSTANT, PERFECTLY SYMMETRIC, uniform-speed expression that snaps into place the moment the shot begins, with no anticipation and no asymmetry -- a mask changing, not a face reacting. Real human reactions have three properties AI video defaults to skipping: a brief delay between stimulus and registration (the face does not know yet), asymmetric onset (one side of the mouth/brow moves a fraction ahead of the other -- true bilateral symmetry reads as fake), and a build rather than a snap (the expression develops over the shot, it doesn't arrive fully formed on frame one). Only the SINGLE best match applies (see MAX_REACTION_PER_SHOT in compiler.ts) -- a shot has one dominant reaction beat, not several competing ones.",
+  "reactions": [
+    {
+      "key": "sudden_shock_realization",
+      "triggerPattern": "\\b(realiz\\w*|realization|dawns? on|catches? sight of|spots?|discovers?|freezes? at the sight|stops? short|stiffens? at|sees? for the first time)\\b",
+      "marker": "Shock/realization reaction physiology:",
+      "description": "Shock/realization reaction physiology: there is a brief, real beat where the face has not yet caught up to what was just seen or understood -- the reaction does NOT arrive on the first frame. The eyes widen a fraction before the rest of the face follows; one side of the brow or mouth moves ahead of the other, never a perfectly mirrored expression; breath audibly catches or stops entirely. The full reaction builds over the shot rather than snapping into place instantly.",
+      "negatives": ["instant symmetric shock expression with no delay", "perfectly mirrored reaction on both sides of the face", "the reaction fully formed on the very first frame", "no anticipation before the reaction registers"]
+    },
+    {
+      "key": "gasp_flinch_startle",
+      "triggerPattern": "\\b(gasps?|flinch\\w*|recoils?|startles?|jumps? back|jolts?|stiffens? (?:suddenly|abruptly))\\b",
+      "marker": "Startle/flinch reaction physiology:",
+      "description": "Startle/flinch reaction physiology: the startle begins in the shoulders and torso a fraction of a second before the face catches up -- a real flinch moves the body first, not the expression alone. It is one sharp, involuntary full-body flinch followed by a held, tense beat, never a smooth uniform motion across the whole body at once.",
+      "negatives": ["smooth uniform full-body reaction with no lead from the shoulders", "the face reacting before or perfectly in sync with the body", "a graceful controlled startle instead of an involuntary jolt", "no held tense beat after the flinch"]
+    },
+    {
+      "key": "quiet_devastation",
+      "triggerPattern": "\\b(face falls|crumples?|breaks? down|composure (?:breaks|cracks|slips)|holds? back tears|throat tightens|blink\\w* back tears)\\b",
+      "marker": "Quiet-devastation reaction physiology:",
+      "description": "Quiet-devastation reaction physiology: the reaction builds slowly rather than snapping into a pose -- the eyes glisten and well before any tear actually falls, a swallow or held breath precedes any visible break in composure, and the mouth may tremble unevenly on one side before the face fully falls. Nothing about this reaction is instant or symmetric.",
+      "negatives": ["instant crying with no build-up", "a symmetric, evenly-formed sad expression", "tears appearing with no glistening or welling first", "composure breaking instantly with no held moment beforehand"]
+    },
+    {
+      "key": "suppressed_reaction",
+      "triggerPattern": "\\b(forces? a smile|hides? (?:his|her|their) reaction|swallows? (?:it|the (?:words|reaction))|composes? (?:himself|herself|themselves)|masks? (?:his|her|their) (?:surprise|shock|fear))\\b",
+      "marker": "Suppressed-reaction physiology:",
+      "description": "Suppressed-reaction physiology: the real, involuntary emotion flickers briefly and genuinely across the face for a fraction of the shot BEFORE the character visibly reasserts control and masks it -- the suppression is visibly an effort, not a seamless switch. The mask that follows is slightly imperfect, not a flawless neutral reset.",
+      "negatives": ["seamless instant switch to a composed expression with no leaked emotion first", "a perfectly neutral mask with no visible effort to maintain it", "no flicker of the real emotion before it is suppressed"]
+    },
+    {
+      "key": "pain_impact_reaction",
+      "triggerPattern": "\\b(winces?|grimaces? (?:in|from) pain|cries? out in pain|doubles? over in pain|clutch\\w* (?:his|her|their|the) (?:arm|leg|side|stomach|chest|ribs|face|jaw)|reels? from the (?:blow|hit|punch|impact)|staggers? from the (?:blow|hit|impact)|struck (?:hard|squarely))\\b",
+      "marker": "Pain/impact reaction physiology:",
+      "description": "Pain/impact reaction physiology: the body leads and the face follows -- on real impact the torso and shoulders contract inward around the point of contact a beat BEFORE the face finishes registering it, never both at once. The face grimaces asymmetrically (one eye may screw shut before the other, the mouth pulls unevenly to one side), a sharp involuntary exhale, grunt, or cry escapes at the moment of contact, and afterward the character instinctively guards or clutches the struck area rather than immediately returning to a neutral, unaffected stance.",
+      "negatives": ["no visible pain reaction after being struck or injured", "a calm neutral expression immediately after taking a hit", "a symmetric, evenly-formed grimace", "instantly returning to a normal stance after impact with no guarding, wincing, or staggering", "the face reacting before the body does"]
+    },
+    {
+      "key": "anger_building",
+      "triggerPattern": "\\b(jaw (?:clench\\w*|tighten\\w*|set\\w*)|fists? clench\\w*|nostrils? flare\\w*|grits? (?:his|her|their) teeth|barely contain\\w* (?:his|her|their) (?:anger|rage|fury)|seething|glares? (?:at|with fury))\\b",
+      "marker": "Anger-building reaction physiology:",
+      "description": "Anger-building reaction physiology: the anger visibly accumulates rather than erupting instantly -- the jaw tightens first, breathing shortens and sharpens, the hands close into fists or grip something harder, and the stare hardens and holds. Any outburst, if the shot has one, is the LAST thing that happens, arriving only after this physical build has had time to register on screen.",
+      "negatives": ["instant screaming rage with no visible build-up", "a calm relaxed body while the character is described as furious", "anger appearing only in raised volume with no physical tension shown", "the outburst happening on the first frame instead of building toward it"]
+    },
+    {
+      "key": "sustained_fear_terror",
+      "triggerPattern": "\\b(trembling with fear|shaking with fear|frozen (?:in|with) terror|paralyzed with fear|wide[- ]eyed with terror|backs? away in fear|retreats? in terror)\\b",
+      "marker": "Sustained-fear reaction physiology:",
+      "description": "Sustained-fear reaction physiology: breathing stays visibly shallow and quick rather than settling over the course of the shot, small involuntary trembling shows in the hands or a held limb even while the character tries to stay still, the eyes stay open and unusually still -- resisting a blink longer than normal before a rapid catch-up blink -- and body weight shifts subtly backward or away from the threat even without a full retreat.",
+      "negatives": ["calm steady breathing during sustained terror", "a relaxed still body with no trembling during prolonged fear", "a normal, unremarkable blink rate during an extended fear reaction", "confident forward-leaning body language while described as terrified"]
+    },
+    {
+      "key": "joy_delight",
+      "triggerPattern": "\\b(face lights? up|breaks? into a (?:grin|smile)|beams? with joy|laughs? (?:freely|with delight|joyfully)|eyes? light\\w* up with (?:joy|delight)|overjoyed|bursts? into laughter)\\b",
+      "marker": "Joy/delight reaction physiology:",
+      "description": "Joy/delight reaction physiology: a genuine smile builds from the eyes outward -- the skin around the eyes crinkles a beat before the mouth fully commits -- and real laughter has an irregular, catching rhythm with audible breath breaks rather than a smooth, evenly-timed cycle. The whole face and posture lift together; the mouth is never performing happiness alone while the rest of the body stays flat.",
+      "negatives": ["a smile appearing only at the mouth with no change around the eyes", "perfectly rhythmic, evenly-timed laughter", "an instantly fully-formed grin with no build from the eyes", "a joyful expression paired with a stiff or unchanged posture"]
+    },
+    {
+      "key": "confusion_disbelief",
+      "triggerPattern": "\\b(brow furrows? in confusion|tilts? (?:his|her|their) head in confusion|blinks? in disbelief|can'?t (?:believe|process) what|struggles? to (?:understand|process)|looks? back and forth in confusion|double[- ]takes?)\\b",
+      "marker": "Confusion/disbelief reaction physiology:",
+      "description": "Confusion/disbelief reaction physiology: there is a genuine pause where the body goes still while the mind processes, the head tilts or the eyes flick between two points as if re-checking what was just seen, and the brow furrows unevenly rather than in one clean symmetric crease -- the reaction reads as actively searching, not a blank stare.",
+      "negatives": ["an instant confident reaction with no pause to process", "a blank unmoving stare instead of searching eye movement", "a perfectly symmetric furrowed brow", "confusion resolving instantly with no lingering uncertainty"]
+    },
+    {
+      "key": "embarrassment_shame",
+      "triggerPattern": "\\b(looks? away in embarrassment|avoids? eye contact|face (?:reddens?|flushes?|burns?) with embarrassment|shoulders? (?:curl|hunch) inward|shrinks? (?:back|away) in embarrassment|touches? (?:his|her|their) (?:face|neck|hair) nervously)\\b",
+      "marker": "Embarrassment/shame reaction physiology:",
+      "description": "Embarrassment/shame reaction physiology: the gaze drops or breaks away rather than holding, the shoulders and chin draw subtly inward making the body read visibly smaller, and a small self-touching gesture (a hand to the neck, face, or hair) arrives a beat AFTER the triggering moment, not simultaneously with it -- the body is visibly trying to become less visible, not composed and unaffected.",
+      "negatives": ["a confident, open posture during embarrassment", "direct sustained eye contact while described as embarrassed", "an instantly composed reaction with no visible discomfort", "a self-touching gesture happening before the embarrassing moment instead of after"]
+    },
+    {
+      "key": "disgust_revulsion",
+      "triggerPattern": "\\b(wrinkles? (?:his|her|their|the) nose|curls? (?:his|her|their|a) lip in disgust|grimaces? in disgust|turns? away in disgust|gags?|revolted)\\b",
+      "marker": "Disgust reaction physiology:",
+      "description": "Disgust reaction physiology: the nose wrinkles and the upper lip curls, often noticeably more on one side than the other, while the head and torso lean or turn away from the source rather than staying square to it. The reaction develops over a beat as the disgust registers -- it does not arrive as an instant fixed grimace.",
+      "negatives": ["a symmetric, evenly-formed disgust expression", "an instant frozen grimace with no build", "the body staying square to the source instead of turning or leaning away", "a disgusted reaction with no nose or lip movement"]
+    },
+    {
+      "key": "relief",
+      "triggerPattern": "\\b(exhales? (?:in|with) relief|shoulders? (?:drop|sag|relax) (?:in|with) relief|visibly relaxes?|lets? out a breath (?:he|she|they) (?:was|were) holding|relief washes? over|slumps? in relief)\\b",
+      "marker": "Relief reaction physiology:",
+      "description": "Relief reaction physiology: held tension leaves the body unevenly, not all at once -- the shoulders drop first, then an exhale that sounds like it was being held finally releases, and the face softens a beat after the body does. Eyes may close briefly. The release reads as a genuine letting-go, not an instant switch to a relaxed pose.",
+      "negatives": ["an instant switch from tense to relaxed with no visible release", "tension leaving the whole body simultaneously and evenly", "no audible or visible exhale during a relief beat", "a relaxed pose from the very first frame of a relief reaction"]
+    },
+    {
+      "key": "contempt_disdain",
+      "triggerPattern": "\\b(smirks? (?:with|in) contempt|sneers?|curls? one corner of (?:his|her|their) (?:mouth|lip)|scoffs?|rolls? (?:his|her|their) eyes in contempt)\\b",
+      "marker": "Contempt reaction physiology:",
+      "description": "Contempt reaction physiology: unlike most expressions, genuine contempt is asymmetric by nature -- only ONE corner of the mouth pulls back or up, never both -- and it typically holds noticeably longer on screen than a startled or shocked reaction before fading. The rest of the face stays comparatively still while that one corner does the work.",
+      "negatives": ["a symmetric two-sided smirk or sneer", "contempt shown with the whole face moving instead of just one side", "a contemptuous expression that vanishes instantly instead of holding"]
+    },
+    {
+      "key": "awe_wonder",
+      "triggerPattern": "\\b(eyes? widen in (?:awe|wonder)|stares? in (?:awe|wonder|amazement)|breath (?:catches|taken away) in (?:awe|wonder)|mouth falls? open in (?:awe|wonder)|transfixed|mesmerized)\\b",
+      "marker": "Awe/wonder reaction physiology:",
+      "description": "Awe/wonder reaction physiology: the eyes widen slowly rather than snapping open, the mouth may part slightly as the breath catches, and the body goes still and subtly forward-leaning rather than tense -- a slow-building, sustained stillness of amazement, not a sharp startled reaction. The gaze holds steadily on the object of wonder rather than darting around.",
+      "negatives": ["a sharp startled flinch instead of a slow-building awe reaction", "eyes snapping wide open instantly", "a tense, defensive posture during a moment of wonder", "the gaze darting around instead of holding on the object of awe"]
+    },
+    {
+      "key": "determination_resolve",
+      "triggerPattern": "\\b(steels? (?:himself|herself|themselves)|sets? (?:his|her|their) jaw (?:in|with) determination|squares? (?:his|her|their) shoulders|hardens? with resolve|steely determination)\\b",
+      "marker": "Determination/resolve reaction physiology:",
+      "description": "Determination/resolve reaction physiology: the body visibly gathers itself before acting -- a breath is drawn and held a beat longer than normal, the shoulders square and pull back, and the jaw sets firm. Unlike anger, there is no tremor of rage in it; the stillness is controlled and deliberate, the eyes narrowing and fixing steadily on the goal rather than on whatever provoked the moment. The resolve reads as a decision being made, not an explosion being suppressed.",
+      "negatives": ["a hesitant, uncertain posture despite a stated moment of resolve", "the determination reading as anger or aggression instead of controlled resolve", "no visible gathering breath or postural change before the resolved action", "an unfocused, wandering gaze during a moment of determination"]
+    },
+    {
+      "key": "guilt",
+      "triggerPattern": "\\b(guilt\\w* (?:washes?|floods?|creeps?) over|can'?t (?:meet|hold) (?:his|her|their) (?:gaze|eyes)|avoids? (?:his|her|their) (?:gaze|eyes) guiltily|hangs? (?:his|her|their) head (?:in guilt|guiltily)|wracked with guilt)\\b",
+      "marker": "Guilt reaction physiology:",
+      "description": "Guilt reaction physiology: the eyes break contact and drop rather than hold -- often specifically AWAY from the person being wronged, not just downward in general -- the head lowers slightly and the shoulders round inward. Unlike embarrassment, the discomfort is directed inward and often paired with a small, aborted gesture toward speaking or reaching out that doesn't complete, as if the character wants to confess or apologize but stops short.",
+      "negatives": ["confident, direct eye contact during a stated moment of guilt", "no gaze aversion or postural change on a guilt beat", "guilt shown identically to simple embarrassment with no inward-directed quality", "a completed apology gesture instead of an aborted, hesitant one"]
+    },
+    {
+      "key": "pride_triumph",
+      "triggerPattern": "\\b(chest (?:swells?|puffs? out) with pride|beams? with pride|raises? (?:his|her|their) (?:fist|arms?) in triumph|chin (?:lifts?|rises?) with pride|stands? (?:taller|straighter) with pride|swells? with pride)\\b",
+      "marker": "Pride/triumph reaction physiology:",
+      "description": "Pride/triumph reaction physiology: the spine straightens and the chest lifts and broadens, the chin rising rather than staying level -- the whole posture visibly grows rather than the reaction living only in the face. Any gesture (a raised fist, a fist pump) is a full, committed motion held for a beat at its peak rather than a quick, small flick, and the smile that follows is unhurried and settled rather than snapping on.",
+      "negatives": ["a slumped or unchanged posture during a stated moment of pride or triumph", "pride expressed only through a smile with no change in body carriage", "a small, quick gesture instead of a full, held triumphant motion", "an instant smile with no settling or holding of the expression"]
+    },
+    {
+      "key": "nervousness_anxiety",
+      "triggerPattern": "\\b(fidgets? nervously|wrings? (?:his|her|their) hands|bites?\\s+(?:his|her|their)?\\s*(?:lip|nails?)\\s+nervously|shifts? (?:his|her|their) weight nervously|taps? (?:his|her|their) (?:foot|fingers?) anxiously|voice (?:wavers?|shakes?) nervously)\\b",
+      "marker": "Nervousness/anxiety reaction physiology:",
+      "description": "Nervousness/anxiety reaction physiology: small, repetitive self-soothing motions recur throughout the shot rather than appearing once -- hands wringing or fidgeting, weight rocking subtly from foot to foot, a repeated small gesture like touching a lip or tapping fingers -- none of it purposeful, all of it involuntary and slightly out of the character's own awareness. Breathing is quicker and shallower than the scene's baseline, and eye contact is inconsistent, breaking and returning rather than fixed either way.",
+      "negatives": ["a calm, still body during a stated moment of nervousness or anxiety", "a single isolated fidget instead of a recurring, involuntary pattern", "steady, confident breathing paired with a description of anxiety", "fixed unbroken eye contact during nervous anticipation"]
+    },
+    {
+      "key": "physical_exhaustion",
+      "triggerPattern": "\\b(gasping for (?:breath|air)|doubles? over (?:gasping|exhausted|catching (?:his|her|their) breath)|collapses? from exhaustion|legs? (?:give|giving) out from exhaustion|hunches? over exhausted|drenched in sweat and exhausted)\\b",
+      "marker": "Physical-exhaustion reaction physiology:",
+      "description": "Physical-exhaustion reaction physiology: the body visibly can no longer sustain its own posture -- shoulders slump forward, hands may brace against knees or a nearby surface, and the chest heaves with deep, audible, uneven breathing rather than composed breath. Movement becomes noticeably slower and heavier than it was moments before, limbs dragging rather than driving, and any pause the character takes is involuntary -- the body forcing a stop, not a choice to rest.",
+      "negatives": ["composed, even breathing immediately after extreme physical exertion", "a fully upright, energetic posture despite a stated state of exhaustion", "movement speed and control unchanged from before the exhausting effort", "an instant, voluntary-looking pause with no visible physical need for it"]
+    },
+    {
+      "key": "concentration_focus",
+      "triggerPattern": "\\b(brow furrows? in concentration|bites?\\s+(?:his|her|their)?\\s*(?:lip|tongue)\\s+in concentration|eyes? narrow (?:in|with) concentration|leans? in with focus|studies? (?:it|him|her|them) intently)\\b",
+      "marker": "Concentration/focus reaction physiology:",
+      "description": "Concentration/focus reaction physiology: the body stills and narrows its attention -- the eyes fix steadily on the object of focus with minimal wandering, the brow draws in slightly, and peripheral movement (fidgeting, shifting) drops away almost entirely for the duration. The stillness is active, not relaxed -- a held, slightly forward-leaning posture, not the loose stillness of boredom or calm.",
+      "negatives": ["a relaxed, loose posture mislabeled as concentration", "eyes wandering or unfocused during a stated moment of concentration", "the same restless fidgeting present during focus as during nervousness or boredom", "a backward-leaning, disengaged posture during intent focus"]
+    },
+    {
+      "key": "jealousy_envy",
+      "triggerPattern": "\\b(eyes? narrow with (?:jealousy|envy)|flash(?:es)? with jealousy|jaw tightens? with jealousy|watches? with (?:thinly veiled |barely concealed )?envy|forced smile hiding jealousy)\\b",
+      "marker": "Jealousy/envy reaction physiology:",
+      "description": "Jealousy/envy reaction physiology: the eyes narrow slightly and track the object of jealousy closely, often while the rest of the face attempts a neutral or pleasant expression that doesn't quite hold -- a small tightness around the mouth or jaw betrays the mismatch between the performed reaction and the real one. The gaze lingers a beat too long rather than moving on naturally.",
+      "negatives": ["an openly hostile expression instead of a masked, leaking jealousy", "a genuinely warm, unguarded expression with no underlying tension", "the gaze moving on naturally instead of lingering on the object of envy", "no mismatch between the performed and the real expression"]
+    },
+    {
+      "key": "loving_tender_gaze",
+      "triggerPattern": "\\b(gazes? (?:lovingly|tenderly|adoringly) at|eyes? soften(?:s|ing)? (?:with|in) (?:love|tenderness|affection)|looks? at \\w+ with (?:love|tenderness|adoration)|face softens? with affection)\\b",
+      "marker": "Loving/tender-gaze reaction physiology:",
+      "description": "Loving/tender-gaze reaction physiology: the whole face softens rather than any one feature performing it alone -- the brow relaxes, the eyes hold steady and slightly warm rather than wide or sharp, and a small, unhurried smile may play at the corners of the mouth without fully forming into a grin. The gaze is sustained and unbroken, comfortable rather than intense, and the body tends to angle subtly toward the person being looked at.",
+      "negatives": ["a sharp, wide-eyed expression mislabeled as a tender or loving gaze", "a fully-formed broad grin instead of a soft, understated smile", "the gaze breaking away quickly instead of holding steadily", "body angled away from the person being looked at with love or tenderness"]
+    },
+    {
+      "key": "boredom_impatience",
+      "triggerPattern": "\\b(sighs? with boredom|taps? (?:his|her|their) (?:foot|fingers?) impatiently|checks? (?:his|her|their) watch impatiently|rolls? (?:his|her|their) eyes with boredom|stifles? a yawn out of boredom|drums? (?:his|her|their) fingers impatiently)\\b",
+      "marker": "Boredom/impatience reaction physiology:",
+      "description": "Boredom/impatience reaction physiology: small repetitive motions (a tapping foot, drumming fingers, a repeated glance at a watch or the door) recur at a steady, almost mechanical interval, distinct from nervous fidgeting's irregular, anxious quality. The eyes drift away from whatever should hold attention rather than fixing on it, posture loosens into a slouch or a weight-shifted lean, and any sigh or exhale is slow and drawn out rather than sharp.",
+      "negatives": ["sharp, anxious fidgeting instead of the slower, mechanical repetition of boredom", "sustained focused attention paired with a description of boredom or impatience", "an upright, engaged posture during a stated moment of impatience", "a sharp sigh instead of a slow, drawn-out one"]
+    },
+    {
+      "key": "nostalgia_wistfulness",
+      "triggerPattern": "\\b(gazes? wistfully|a wistful (?:smile|look|expression)|lost in memory|lost in thought|a faraway look|eyes? (?:mist|well) (?:up )?with nostalgia|nostalgic(?:ally)?)\\b",
+      "marker": "Nostalgia/wistfulness reaction physiology:",
+      "description": "Nostalgia/wistfulness reaction physiology: the gaze softens and drifts slightly out of focus, looking through or past whatever is physically in front of them rather than at it — a small, involuntary almost-smile plays at the mouth without fully forming, distinct from real amusement. The body stills and slows, breathing settles into a long, slow exhale, as if the moment itself is being lingered over rather than reacted to quickly.",
+      "negatives": ["a sharp, focused gaze instead of a soft unfocused one", "a fully-formed smile instead of a faint almost-smile", "quick, energetic movement during a stated nostalgic moment", "no stillness or slowing of breath"]
+    },
+    {
+      "key": "curiosity",
+      "triggerPattern": "\\b(leans? in (?:with )?curious(?:ly|ity)|head tilts? (?:with |in )?curiosity|eyes? (?:light up|spark) with curiosity|peers? (?:curiously|closer)|curious(?:ly)? (?:examines?|studies?|inspects?))\\b",
+      "marker": "Curiosity reaction physiology:",
+      "description": "Curiosity reaction physiology: the head tilts and the body leans toward the object of interest, eyes widening slightly and tracking it closely with active, searching movement — distinct from confusion's searching, this reading is open and engaged rather than troubled, often paired with a slight forward shift of weight as if drawn in.",
+      "negatives": ["a static, uninterested posture during a stated moment of curiosity", "eyes remaining fixed and unmoving instead of actively tracking the object of interest", "a troubled or confused quality instead of open, engaged interest", "no forward lean or shift of weight toward the object of curiosity"]
+    },
+    {
+      "key": "skepticism_doubt",
+      "triggerPattern": "\\b(raises? an? (?:eyebrow|brow) skeptically|arms? cross(?:ed|es|ing)? skeptically|a skeptical (?:look|glance|expression)|narrows? (?:his|her|their) eyes? skeptically|unconvinced)\\b",
+      "marker": "Skepticism/doubt reaction physiology:",
+      "description": "Skepticism/doubt reaction physiology: one eyebrow may rise independently of the other — a genuinely asymmetric expression — while the head tilts back slightly and the arms often fold across the chest, physically creating distance. The mouth may press into a thin, flat line. The overall posture reads as evaluating and withholding judgment, not hostile, just unconvinced.",
+      "negatives": ["both eyebrows rising symmetrically instead of one independently", "an open, unguarded posture instead of a slightly closed, evaluating one", "a hostile or angry quality instead of measured doubt", "instant acceptance with no evaluating pause"]
+    },
+    {
+      "key": "awkwardness",
+      "triggerPattern": "\\b(an awkward (?:silence|pause|moment|beat)|shifts? (?:his|her|their) weight awkwardly|an awkward (?:laugh|chuckle)|fumbles? (?:for words|awkwardly)|unsure where to (?:look|put (?:his|her|their) hands))\\b",
+      "marker": "Awkwardness reaction physiology:",
+      "description": "Awkwardness reaction physiology: the body doesn't know what to do with itself — weight shifts from foot to foot, hands reach for a pocket, hair, or each other without settling anywhere, and eye contact breaks and returns in short, uncertain bursts. Any laugh or speech that follows is slightly mistimed or trails off, distinct from confident, easy delivery.",
+      "negatives": ["settled, confident body language during a stated awkward moment", "hands finding an immediate, comfortable resting place", "smooth, well-timed delivery instead of a mistimed or trailing one", "sustained, comfortable eye contact during awkwardness"]
+    },
+    {
+      "key": "gratitude",
+      "triggerPattern": "\\b(a grateful (?:smile|look|expression|nod)|mouths? (?:thank you|thanks)|places? a hand (?:over|on) (?:his|her|their) heart gratefully|genuinely (?:touched|moved) by)\\b",
+      "marker": "Gratitude reaction physiology:",
+      "description": "Gratitude reaction physiology: the face softens and the eyes hold steady on the person being thanked, often with a small, unhurried nod. A hand may rise to the chest, over the heart, in an unconscious, brief gesture. Unlike a performed thank-you, there is a genuine beat where the reaction is felt before any word or gesture follows it.",
+      "negatives": ["an instant, performed thank-you gesture with no felt beat first", "a hurried, dismissive nod instead of a held, sincere one", "no softening of the face accompanying stated gratitude", "eyes breaking away instead of holding on the person being thanked"]
+    },
+    {
+      "key": "empathy_compassion",
+      "triggerPattern": "\\b(reaches? out (?:to comfort|gently)|a comforting hand on (?:his|her|their)|softens? with (?:empathy|compassion|sympathy)|pulls? (?:him|her|them) into a comforting|gently (?:squeezes?|holds?) (?:his|her|their) hand)\\b",
+      "marker": "Empathy/compassion reaction physiology:",
+      "description": "Empathy/compassion reaction physiology: the body orients fully toward the person in distress, movements slowing and softening — a hand reaches out deliberately and gently, making real, steady contact rather than a quick pat. The face mirrors a trace of the other person's pain without performing it, brow drawing in slightly, and the whole posture reads as present and attentive rather than hurried.",
+      "negatives": ["a quick, perfunctory pat instead of a deliberate, gentle, sustained touch", "the body oriented away from or not fully toward the person in distress", "a hurried or distracted quality during a stated moment of empathy", "no facial softening or mirroring of the other person's distress"]
+    },
+    {
+      "key": "intimidated_submission",
+      "triggerPattern": "\\b(shrinks? (?:back|away) intimidated|lowers? (?:his|her|their) (?:gaze|eyes) submissively|cowers?|cowering|backs? down|visibly (?:intimidated|cowed))\\b",
+      "marker": "Intimidation/submission reaction physiology:",
+      "description": "Intimidation/submission reaction physiology: the body makes itself smaller — shoulders drop and curl in, the head lowers, and the gaze drops away from direct eye contact rather than holding it. Weight shifts backward or away from the source of intimidation, and any response is delayed and smaller in scale than it would otherwise be, physically ceding space rather than holding ground.",
+      "negatives": ["the body holding its ground or expanding instead of shrinking", "sustained direct eye contact instead of a dropped, averted gaze", "a confident, unhurried response instead of a delayed, diminished one", "no physical retreat or space-ceding despite a stated intimidation"]
+    },
+    {
+      "key": "flirtatious_playfulness",
+      "triggerPattern": "\\b(a flirtatious (?:smile|glance|look)|bites? (?:his|her|their) lip playfully|arches? an? eyebrow flirtatiously|playfully teases?|a coy (?:smile|glance|look))\\b",
+      "marker": "Flirtatious-playfulness reaction physiology:",
+      "description": "Flirtatious-playfulness reaction physiology: the gaze holds a beat longer than an ordinary glance before breaking away, often with a small, knowing half-smile rather than a full grin. The head may tilt, and small self-aware gestures (playing with hair, a sideways glance up) read as deliberate rather than nervous. The energy is light and teasing, not earnest — distinct from the sustained, settled warmth of loving_tender_gaze.",
+      "negatives": ["a fully earnest, settled expression instead of a light, teasing one", "no held beat or lingering in the gaze before it breaks away", "a full unrestrained grin instead of a small knowing half-smile", "nervous, uncertain body language instead of deliberate, playful confidence"]
+    },
+    {
+      "key": "delighted_surprise",
+      "triggerPattern": "\\b(claps? (?:her|his|their) hands? (?:in|with) delight|a delighted squeal|pleasantly surprised|delighted by the surprise)\\b",
+      "marker": "Delighted-surprise reaction physiology:",
+      "description": "Delighted-surprise reaction physiology: the reaction arrives as a quick upward burst — hands may fly up or clap together, the face opening into a bright, immediate smile with the eyebrows lifting — distinct from shock's stillness, this is instantly kinetic and warm. A small laugh or exclamation often escapes at the same instant the body moves, not after a delay.",
+      "negatives": ["a delayed, stunned stillness instead of an immediate kinetic burst", "a guarded or neutral expression instead of an immediately warm, open one", "no upward hand or body movement accompanying delighted surprise", "the reaction reading as shock or alarm rather than warm delight"]
+    },
+    {
+      "key": "longing_yearning",
+      "triggerPattern": "\\b(gazes? longingly|an? aching (?:longing|want)|reaches? out longingly|a longing (?:look|glance|sigh)|yearns? for|aches? to (?:see|hold|be with))\\b",
+      "marker": "Longing/yearning reaction physiology:",
+      "description": "Longing/yearning reaction physiology: the body leans very slightly toward the object of longing even when it's out of reach, the gaze fixed and unbroken, often with a visible held breath or a slow, heavy exhale. A hand may lift slightly as if to reach before stopping itself, and the face carries a mix of warmth and visible ache — distinct from loving_tender_gaze's settled contentment, this reads as wanting something not currently possessed.",
+      "negatives": ["a settled, content expression instead of one carrying visible ache or want", "no lean or incomplete reaching gesture toward the object of longing", "the gaze breaking away easily instead of holding fixed", "a fully completed reaching gesture instead of one that stops short"]
+    }
+  ]
+}

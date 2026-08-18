@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "note": "Same architecture as LIGHTING_LIBRARY.json, applied to a shot's EMOTIONAL TEMPO instead of its optics. When triggerPattern matches a shot's AUTHORED motion/description text, `description` is appended to that shot's `motion` field and `cameraNote` is appended to that shot's `camera` field (each marker-gated, idempotent across recompiles, independently of the other — `description` and `cameraNote` MUST literally start with `marker` and `cameraMarker` respectively, or the idempotency check can never find them and will duplicate on every recompile). Lighting and color are already locked per-mood; motion speed/sharpness was not — a tense chase and a quiet funeral got the same generic 'clear, visible body movement' framing. Only the SINGLE best match applies (see MAX_PACE_PER_SHOT in compiler.ts) — a shot cannot be both urgent and grief-slow at once, and both fields are seasoned from the SAME matched entry so the character's motion and the camera's motion can never disagree about how urgent or unhurried a shot feels. NEITHER field's text may use the word 'pace' on its own (collides with the walking entry's 'paces/pacing' trigger in ACTION_LIBRARY.json — confirmed: it made a recompile mistake this library's OWN injected text for a walking cue and bolt on contradictory 'steady, unhurried gait' text onto a sprint) NOR any camera-movement verb from CAMERA_MOVE_RE / the compiler's own locomotion-camera check (track, dolly, push, pull, pan, crane, handheld, follow, orbit, arc, steadicam, zoom) — those flip a close-up's cameraFixed classification in 5-videos.ts, silently undoing the static-lock a director may have intended. Use 'tempo' and stay neutral about WHICH camera move is used.",
+  "paces": [
+    {
+      "key": "urgent_sharp",
+      "triggerPattern": "\\b(chas\\w*|fle(?:e|es|eing)|sprints?|sprinting|dashes?|dashing|panics?|panicking|panicked|frantic\\w*|desperate\\w*|urgent\\w*|hurr(?:y|ies|ying|ied)|races?\\s+against|alarm\\w*|scrambles?|scrambling)\\b",
+      "marker": "Urgent tempo:",
+      "description": "Urgent tempo: every movement is quick and sharp-edged — weight shifts happen fast, with almost no hesitation between one action and the next. Breathing is visibly quickened and shallow, gestures are abrupt rather than smooth, and there is no lingering: the body moves on to the next beat the instant the current one completes.",
+      "cameraMarker": "Urgent camera tempo:",
+      "cameraNote": "Urgent camera tempo: reframes happen briskly and decisively with no lingering holds — whatever the camera is already doing in this shot happens at a quicker, more energetic tempo than a calm scene, never the unhurried glide of a relaxed moment.",
+      "negatives": ["slow floating movement during an urgent moment", "languid unhurried gestures during danger", "calm relaxed breathing during a panic", "camera lingering lazily during a chase or emergency"]
+    },
+    {
+      "key": "slow_deliberate_grief",
+      "triggerPattern": "\\b(griev\\w*|mourn\\w*|sorrow\\w*|heartbrok\\w*|devastat\\w*|numbly|numbness|funeral|bereave\\w*|weeps?|weeping|wept)\\b",
+      "marker": "Slow deliberate tempo:",
+      "description": "Slow deliberate tempo: movements carry visible weight and reluctance — a hand rises slower than it needs to, a step is taken and then pauses before the next, gestures stay small and contained rather than expansive. Silences between actions linger longer than an ordinary beat; breathing is slow, occasionally catching or uneven, and nothing about the body's motion is brisk or efficient.",
+      "cameraMarker": "Slow deliberate camera tempo:",
+      "cameraNote": "Slow deliberate camera tempo: the camera holds patiently with no urgency to reframe or cut — whatever the camera is already doing in this shot happens slowly and gently, giving every small gesture room to register rather than hurrying past it.",
+      "negatives": ["brisk energetic movement during a grief or mourning scene", "quick snappy gestures in a somber moment", "upbeat or hurried body language during mourning", "camera hurrying or cutting quickly during a slow, grieving scene"]
+    },
+    {
+      "key": "romantic_tender",
+      "triggerPattern": "\\b(tender\\w*|intimate\\w*|yearn\\w*|longing|caress\\w*|gaz(?:e|es|ing)\\s+into|falls?\\s+in\\s+love|adoringly|lovingly)\\b",
+      "marker": "Tender tempo:",
+      "description": "Tender tempo: movements are slow, soft-edged and unhurried — a hand reaches with care rather than speed, weight settles gently rather than dropping, and small gestures (a brush of fingers, a leaning-in) are given time to fully register before the next one begins. Breathing is calm and even; nothing about the body is rushed or clipped.",
+      "cameraMarker": "Tender camera tempo:",
+      "cameraNote": "Tender camera tempo: whatever the camera is already doing in this shot happens slowly and smoothly, with no abrupt reframing — holds linger a beat longer than a neutral scene would, giving the moment room to breathe.",
+      "negatives": ["brisk hurried movement during a tender or romantic moment", "clipped mechanical gestures during intimacy", "camera cutting or reframing abruptly during a tender moment", "rushed pacing during a romantic beat"]
+    },
+    {
+      "key": "playful_comedic",
+      "triggerPattern": "\\b(playful\\w*|teasing|giggl\\w*|goofy|silly\\w*|mischiev\\w*|bant\\w*|prank\\w*|comedic\\w*|clowning)\\b",
+      "marker": "Playful tempo:",
+      "description": "Playful tempo: movements are light, bouncy and quick-witted — gestures overshoot slightly with energy before settling, timing has a bright, springy quality rather than a smooth glide, and small reactive beats (a startled laugh, a mock flinch) land sharply and immediately rather than building slowly.",
+      "cameraMarker": "Playful camera tempo:",
+      "cameraNote": "Playful camera tempo: whatever the camera is already doing in this shot happens with a light, energetic bounce rather than a smooth, formal glide — quick to catch a reaction, never solemn or heavy.",
+      "negatives": ["heavy solemn movement during a playful or comedic moment", "slow deliberate gestures during lighthearted banter", "camera moving with grave solemnity during a comedic beat", "flat deadpan stillness during physical comedy"]
+    },
+    {
+      "key": "cinematic_slow_motion",
+      "triggerPattern": "\\b(slow motion|slow-motion|everything slows|time seems to slow|the world slows down|time (?:stood|stands) still|time slows)\\b",
+      "marker": "Cinematic slow-motion tempo:",
+      "description": "Cinematic slow-motion tempo: every movement carries exaggerated weight and hang time — small details (loose hair, fabric, dust, falling debris) drift and settle far slower than gravity alone would produce, weight transfers happen with visible, extended deliberation, and even a fast action stretches out into individually readable phases rather than blurring together.",
+      "cameraMarker": "Cinematic slow-motion camera tempo:",
+      "cameraNote": "Cinematic slow-motion camera tempo: whatever the camera is already doing in this shot happens smoothly and with exaggerated patience, holding steady rather than reframing quickly — nothing about its movement is brisk or sudden.",
+      "negatives": ["normal-speed motion during a beat written as slow motion", "abrupt or brisk movement during a slow-motion beat", "fabric, hair or debris moving at normal gravity-driven speed during slow motion", "camera reframing quickly during a slow-motion beat"]
+    },
+    {
+      "key": "tense_quiet_dread",
+      "triggerPattern": "\\b(dread\\w*|ominous\\w*|foreboding|unsettl\\w*|eerie|creeping\\s+unease|held\\s+breath|premonition)\\b",
+      "marker": "Quiet-dread tempo:",
+      "description": "Quiet-dread tempo: movement is minimal and tightly controlled — each gesture is small, careful and deliberate, as if any sudden motion might draw attention. Breathing is shallow and held rather than relaxed, weight shifts are slow and silent, and stillness itself carries visible tension rather than reading as calm.",
+      "cameraMarker": "Quiet-dread camera tempo:",
+      "cameraNote": "Quiet-dread camera tempo: whatever the camera is already doing in this shot happens slowly and with restraint, holding unusually still rather than reframing — any movement it does make feels deliberate and watchful, never brisk or casual.",
+      "negatives": ["relaxed casual movement during a scene of quiet dread", "brisk energetic gestures during rising tension", "camera moving briskly or casually during a foreboding moment", "calm loose body language during a scene built on unease"]
+    }
+  ]
+}

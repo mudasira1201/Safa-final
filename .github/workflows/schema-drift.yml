@@ -1,0 +1,25 @@
+name: Schema drift check
+
+on:
+  push:
+    paths:
+      - "ai-film-pro/prisma/schema.prisma"
+      - "safa-web/prisma/schema.prisma"
+      - ".github/scripts/check-schema-drift.mjs"
+  pull_request:
+    paths:
+      - "ai-film-pro/prisma/schema.prisma"
+      - "safa-web/prisma/schema.prisma"
+      - ".github/scripts/check-schema-drift.mjs"
+
+jobs:
+  check:
+    name: Compare ai-film-pro and safa-web schema.prisma
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Diff both schema.prisma files
+        run: node .github/scripts/check-schema-drift.mjs

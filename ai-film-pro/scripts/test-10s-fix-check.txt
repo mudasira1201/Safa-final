@@ -1,0 +1,11 @@
+[Target length: 10 seconds]
+"THE CALL HOME"
+Genre: Drama — Setting: military bunker at night, then a home hallway during the day
+
+CHARACTERS
+CAPTAIN ARJUN RAO — A man in his early 30s. Athletic build, tall. Tan skin, short black hair, clean-shaven. Dust on his face. Wearing a military uniform. Voice: male_adult.
+TARA RAO — A girl, eight years old. Small build. Dark hair in two braids. No facial hair. Wearing a yellow cotton dress. Voice: child_female.
+
+SHOT LIST
+1. Close-up, Arjun sits alone in a dim bunker at night, a phone vibrating in his hand, dust on his face. He answers it.
+2. Wide shot, Tara runs down a sunlit hallway at home during the day, holding a phone to her ear, alone in frame, smiling. TARA: "Papa!"

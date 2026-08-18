@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "note": "Same architecture as ACTION_LIBRARY.json, applied to LIGHT instead of MOTION. When triggerPattern matches a shot's AUTHORED lighting/setting/description text, its description is appended to that shot's `lighting` field (once — idempotent via the leading marker phrase), and its negatives are folded into that shot's negative prompt. The LLM breakdown writes a generic mood word ('dramatic lighting', 'moonlit') and leaves the image model to improvise the actual optical behavior — which is where AI images default to a flat, evenly-lit, 'obviously AI' look. These entries encode, once, in real photographic/optical detail, how each common lighting setup actually behaves (falloff, shadow hardness, color cast), so every shot that needs it gets the same well-tested direction instead of a fresh improvisation each time. Unlike ACTION_LIBRARY (capped at 2 per shot — actions can coexist), only the SINGLE best match is applied here (see MAX_LIGHTING_PER_SHOT in compiler.ts): two lighting moods asserted on the same shot are far more likely to contradict each other than two simultaneous physical actions.",
+  "moods": [
+    {
+      "key": "golden_hour_warm",
+      "triggerPattern": "\\b(golden hour|sunset|sunrise|dusk|dawn)\\b",
+      "marker": "Golden-hour light behavior:",
+      "description": "Golden-hour light behavior: warm, low-angle sunlight rakes across the scene near-horizontally, casting long, soft-edged shadows and a gentle golden-orange color cast across skin tones and surfaces. Highlights on skin and hair carry a warm rim glow where the light grazes an edge; shadow areas stay soft, never pure black, filled with ambient warm bounce light rather than a harsh cutoff.",
+      "negatives": ["flat overhead lighting", "harsh midday shadows during a sunset scene", "cool blue color cast on a golden-hour scene", "no shadow direction"]
+    },
+    {
+      "key": "moonlit_night",
+      "triggerPattern": "\\b(moonlit|moonlight|night sky|under the moon)\\b",
+      "marker": "Moonlit-night light behavior:",
+      "description": "Moonlit-night light behavior: a single dominant cool blue-silver key light source (the moon, or a moon-adjacent practical) rakes across the scene at a low angle, throwing long, soft, cool-toned shadows. Areas outside the direct moonlight fall into deep, textured shadow — not a pure black void, but dim enough that fine detail is genuinely hard to see, with faint ambient scatter keeping skin tones and key props just barely legible.",
+      "negatives": ["bright even daylight-level exposure at night", "warm orange cast on a moonlit scene", "no visible shadow falloff", "flat overhead lighting at night"]
+    },
+    {
+      "key": "chiaroscuro_dramatic",
+      "triggerPattern": "\\b(chiaroscuro|dramatic lighting|noir lighting|high[- ]contrast lighting)\\b",
+      "marker": "Chiaroscuro lighting behavior:",
+      "description": "Chiaroscuro lighting behavior: one hard, directional key light carves the subject sharply out of near-total darkness — one side of the face and body fully lit with crisp highlight detail, the other side falling into deep, almost featureless shadow, with a hard, visible transition line between the two rather than a gradual blend. Background detail falls away into darkness except where a separate accent or rim light deliberately picks out one or two elements.",
+      "negatives": ["evenly lit face", "soft diffused fill eliminating shadow", "flat lighting", "no shadow side on the face"]
+    },
+    {
+      "key": "soft_overcast_diffused",
+      "triggerPattern": "\\b(overcast|cloudy sky|diffused light|soft natural light)\\b",
+      "marker": "Soft overcast light behavior:",
+      "description": "Soft overcast light behavior: light arrives from the entire sky as one large, even, shadowless source — skin tones render smooth and neutral with only the faintest gradient of shadow under the chin, nose, and brow, and no single hard-edged shadow anywhere in frame. Color temperature stays neutral-to-cool, with no strong directional warm or cool cast from a visible sun.",
+      "negatives": ["hard directional shadow on an overcast day", "strong sun flare in an overcast scene", "high-contrast chiaroscuro on a cloudy day"]
+    },
+    {
+      "key": "candle_firelight",
+      "triggerPattern": "\\b(candle(?:light)?|firelight|campfire|lantern|by the fire)\\b",
+      "marker": "Candle/firelight behavior:",
+      "description": "Candle/firelight behavior: a small, warm, low-intensity light source casts a warm amber-orange glow that falls off sharply with distance — anything more than a short distance from the flame sits in near-darkness. Skin closest to the source picks up a warm orange highlight; the light and its shadows feel alive rather than perfectly static, as a real flame's light subtly shifts.",
+      "negatives": ["bright even room lighting from a single candle", "cool blue cast near firelight", "candlelit scene lit like daylight", "flat overhead lighting near a candle"]
+    },
+    {
+      "key": "neon_urban_night",
+      "triggerPattern": "\\b(neon|cyberpunk|city lights|urban night)\\b",
+      "marker": "Neon/urban-night light behavior:",
+      "description": "Neon/urban-night light behavior: multiple small, saturated colored light sources (signage, storefronts, streetlights) throw overlapping pools of colored light — magenta, cyan, warm sodium-orange — across surfaces, each pool falling off into darkness at its edges rather than blending into one even wash. Skin and clothing pick up color-cast rim light from whichever colored source is nearest, and different parts of the frame can carry visibly different color casts from different sources simultaneously.",
+      "negatives": ["single uniform white light source at night", "no color cast from neon signage", "flat evenly lit night street"]
+    },
+    {
+      "key": "practical_interior_lamp",
+      "triggerPattern": "\\b(lamp|desk lamp|table lamp|practical light|warm interior light)\\b",
+      "marker": "Practical interior-lamp light behavior:",
+      "description": "Practical interior-lamp light behavior: a small warm-toned practical source (lamp, overhead fixture) lights its immediate surroundings brightly with a fast falloff — the area right around the lamp reads warm and well-exposed, while corners of the room a few metres away sit noticeably dimmer, never uniformly bright edge to edge.",
+      "negatives": ["evenly lit room from a single small lamp", "flat overhead studio lighting", "no falloff away from the light source"]
+    },
+    {
+      "key": "harsh_direct_sun",
+      "triggerPattern": "\\b(harsh sun|midday sun|bright sunlight|scorching)\\b",
+      "marker": "Harsh direct-sunlight behavior:",
+      "description": "Harsh direct-sunlight behavior: a single, high, hard sun casts short, hard-edged, high-contrast shadows directly beneath and behind subjects and objects, with bright, slightly blown highlight areas on exposed skin and pale surfaces. Shadow areas stay dark and hold real detail loss, with a sharp, clearly defined shadow edge rather than a soft gradient.",
+      "negatives": ["soft diffused shadows under harsh midday sun", "no shadows despite direct sunlight", "flat lighting at midday"]
+    },
+    {
+      "key": "romantic_soft_glow",
+      "triggerPattern": "\\b(romantic lighting|soft romantic glow|intimate warm glow|lit for romance)\\b",
+      "marker": "Romantic soft-glow light behavior:",
+      "description": "Romantic soft-glow light behavior: a diffused warm key light wraps gently around the subject with almost no hard shadow edge, highlights bloom softly rather than clipping sharply, and a faint warm haze softens contrast throughout the frame. Skin tones read warm and flattering, with a gentle falloff into softly lit — never black — shadow.",
+      "negatives": ["harsh hard-edged shadows on a romantic scene", "cold clinical lighting during an intimate moment", "flat unflattering overhead light on a romantic beat", "high-contrast shadow cutting across a romantic close-up"]
+    },
+    {
+      "key": "somber_blue_muted",
+      "triggerPattern": "\\b(somber light|muted blue light|melancholic light|blue-grey wash|grief-lit|desaturated mourning light)\\b",
+      "marker": "Somber muted-blue light behavior:",
+      "description": "Somber muted-blue light behavior: light arrives soft, cool and low-contrast, as if filtered through overcast glass — colors are muted toward grey-blue, skin tones lose their usual warmth without turning sickly, and shadows sit shallow and soft rather than crushed. Nothing in the frame catches a bright highlight; the whole image reads hushed and heavy.",
+      "negatives": ["warm golden cast on a somber or grieving scene", "bright punchy saturated color in a muted mourning scene", "harsh contrasty shadows in a somber-lit moment", "cheerful bright highlights during a scene of muted grief"]
+    },
+    {
+      "key": "clinical_fluorescent",
+      "triggerPattern": "\\b(fluorescent light\\w*|hospital light\\w*|clinical light\\w*|sterile light\\w*|office fluorescent)\\b",
+      "marker": "Clinical fluorescent light behavior:",
+      "description": "Clinical fluorescent light behavior: flat, even, slightly cool-green-tinted light fills the space uniformly from overhead panels, producing minimal shadow anywhere and a faintly sickly, sterile cast on skin tones. Contrast is low and unflattering, with no warm falloff or directional shaping — every corner of the room reads equally, evenly lit.",
+      "negatives": ["warm inviting light in a clinical or hospital setting", "dramatic directional shadow under sterile fluorescent lighting", "golden-hour warmth in a fluorescent-lit interior", "soft flattering falloff under office fluorescent light"]
+    },
+    {
+      "key": "stormy_overcast_dramatic",
+      "triggerPattern": "\\b(storm\\w*|thunderstorm|lightning|stormy sky|tempest\\w*)\\b",
+      "marker": "Stormy-sky light behavior:",
+      "description": "Stormy-sky light behavior: heavy, dark grey-green storm clouds swallow most direct sunlight, leaving a dim, cool, high-contrast ambient light that shifts and flickers when lightning flashes brighten the scene for a fraction of a second before falling back to gloom. Surfaces read wet and reflective where rain has touched them, and shadow areas stay deep and cool-toned.",
+      "negatives": ["bright clear sunny lighting during a storm", "warm golden cast under storm clouds", "flat even lighting with no sense of the storm's darkness", "no flicker or contrast shift from lightning"]
+    },
+    {
+      "key": "silhouette_backlit",
+      "triggerPattern": "\\b(silhouett\\w*|backlit against|rim-?lit against the light|dark shape against)\\b",
+      "marker": "Silhouette backlight behavior:",
+      "description": "Silhouette backlight behavior: a strong light source sits directly behind the subject, blowing out the background to a bright, near-featureless wash while the subject in front of it reads as a near-solid dark shape with only a thin, bright rim of light tracing their outline — facial features and clothing detail are deliberately lost to shadow, not softly lit.",
+      "negatives": ["front-lit face detail visible in a silhouette shot", "even exposure across subject and background in a backlit silhouette", "no rim light outlining the silhouetted subject", "fully lit facial features in a shot written as a silhouette"]
+    },
+    {
+      "key": "spotlight_isolation",
+      "triggerPattern": "\\b(spotlight|single spot(?:light)?|stage light\\w*|theatrical light\\w*|pool of light)\\b",
+      "marker": "Spotlight-isolation light behavior:",
+      "description": "Spotlight-isolation light behavior: one tight, bright, sharply-edged pool of light isolates the subject against a background that falls away to near-total darkness just past its edge — no ambient fill lifts the surrounding space, so anything outside the beam is genuinely difficult to see, not merely dim.",
+      "negatives": ["ambient fill lighting the background outside the spotlight", "soft-edged gradual falloff instead of a sharp spotlight edge", "even overall room lighting in a spotlight-isolated scene", "visible detail in the darkness surrounding the spotlight"]
+    },
+    {
+      "key": "god_rays_dusty",
+      "triggerPattern": "\\b(god rays|light shafts|shafts of light|dusty beams|sunbeams? through|light streaming through)\\b",
+      "marker": "God-rays light behavior:",
+      "description": "God-rays light behavior: strong directional light breaks through gaps (windows, trees, blinds, clouds) into visible, sharply-defined shafts made tangible by floating dust or haze in the air, each beam bright where it crosses open space and falling to comparative shadow between them — the light is visibly volumetric, not just a bright patch on the floor.",
+      "negatives": ["flat even light with no visible beams", "no dust or haze catching the light shafts", "diffuse shadowless lighting where god rays are described", "uniform brightness with no contrast between beam and shadow"]
+    },
+    {
+      "key": "string_lights_festive",
+      "triggerPattern": "\\b(string lights|fairy lights|festival lights|market lanterns|paper lanterns|twinkling lights)\\b",
+      "marker": "String-lights festive light behavior:",
+      "description": "String-lights festive light behavior: many small warm point-light sources are strung overhead or along surfaces, each casting a soft, tiny halo of warm glow and gentle bokeh in out-of-focus areas, while the broader space between them stays comparatively dim — the effect is a scattered, twinkling warmth rather than one even wash of light.",
+      "negatives": ["single uniform light source where many small string lights are described", "no bokeh or halo around individual light points", "evenly bright space with no dim gaps between light sources", "cool white light instead of warm point-source glow"]
+    }
+  ]
+}

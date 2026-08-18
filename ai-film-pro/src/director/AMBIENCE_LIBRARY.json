@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "note": "Applied to shot.ambience, a field ONLY compileBreakdown() writes (see ambienceFor() in compiler.ts) -- never the LLM. Unlike ACTION/LIGHTING/PACE/REACTION (append to an existing field, may coexist with other libraries), this is a single ASSIGNMENT per shot, matched against the shot's own setting+description text, with a guaranteed fallback (quiet_room_tone_default, empty triggerPattern) so no shot is ever left with dead silence -- a scene with literally zero ambient sound is one of the most obvious 'not a real production' tells there is. Read by 5-videos.ts and folded into the motion prompt as an explicit AMBIENCE clause for the video model's native audio (generate_audio), alongside (not instead of) the existing crowd SFX text, which covers PEOPLE noise specifically -- this library covers the ENVIRONMENT's own sound (weather, room tone, water, fire), a complementary category. Scored by simple first-match-in-order like LIGHTING_LIBRARY, not a whole-project lock like colorPalette: ambience is legitimately different shot to shot within the same film (an office, then a car, then a street).",
+  "ambiences": [
+    {
+      "key": "rain_storm",
+      "triggerPattern": "\\b(rain\\w*|storm\\w*|downpour|drizzl\\w*|thunder\\w*)\\b",
+      "description": "Steady rainfall hitting the ground, roof, or windows in a continuous patter, water audibly dripping or streaming off any visible surface. If the scene is a storm, distant low thunder rolls occasionally underneath, never sharp or startling unless a specific strike is described."
+    },
+    {
+      "key": "wind_outdoor",
+      "triggerPattern": "\\b(wind\\w*|breez\\w*|gust\\w*)\\b",
+      "description": "A steady, moving wind sound, its intensity matching whatever the visible motion of hair, fabric, leaves, or dust suggests -- rising and gusting rather than a static, unchanging drone."
+    },
+    {
+      "key": "city_street_traffic",
+      "triggerPattern": "\\b(city street|sidewalk|downtown|urban street|busy street|traffic)\\b",
+      "description": "Distant, continuous city traffic hum with the occasional closer car passing, muffled and layered rather than a single isolated sound. Footsteps on pavement are audible in sync with any character's own visible steps, and the overall level stays low enough not to fight dialogue."
+    },
+    {
+      "key": "forest_nature",
+      "triggerPattern": "\\b(forest|woods|jungle|treeline)\\b",
+      "description": "A living outdoor soundscape: birdsong, wind moving through leaves and branches, and faint rustling in the undergrowth. Never dead silence -- a real forest is never quiet."
+    },
+    {
+      "key": "ocean_beach",
+      "triggerPattern": "\\b(ocean|beach|shore|shoreline|surf\\b|seaside)\\b",
+      "description": "Waves rolling in and receding in a steady, rhythmic cycle, matched to any visible wave motion in the shot, with a constant faint hiss of water on sand underneath. Distant gulls or wind if the setting suggests an open coastline."
+    },
+    {
+      "key": "restaurant_cafe",
+      "triggerPattern": "\\b(restaurant|caf[ée]|coffee shop|diner|bar\\b|pub\\b)\\b",
+      "description": "A low, layered murmur of background conversation and occasional laughter, the clink of dishware, cutlery, or glasses, and faint distant kitchen or espresso-machine sound -- all kept low in the mix, well under any foreground dialogue, never intelligible as separate words."
+    },
+    {
+      "key": "office_workplace",
+      "triggerPattern": "\\b(office|workplace|cubicle|boardroom|open-plan)\\b",
+      "description": "Quiet indoor room tone: a faint, barely-audible HVAC or fluorescent hum, an occasional distant keyboard clatter or muffled phone ringing elsewhere in the building. Not dead silence -- a real occupied office always carries some low ambient activity."
+    },
+    {
+      "key": "car_interior",
+      "triggerPattern": "\\b(inside the car|car interior|driver'?s seat|passenger seat|dashboard)\\b",
+      "description": "A steady engine hum and road noise, with the muffled sound of other traffic and the environment passing by outside the windows -- intensity matching the vehicle's implied speed, quieter when stopped or idling, louder at highway speed."
+    },
+    {
+      "key": "quiet_domestic_night",
+      "triggerPattern": "\\b(quiet house|dark hallway|sleeping house|house at night|nursery|bedroom at night)\\b",
+      "description": "Near-total quiet with just enough real room tone to feel inhabited rather than a dead soundstage: a distant clock ticking, the faint tick and settle of the house's own structure, maybe a barely-audible hum from another room. The quiet itself is part of the tension -- small sounds should read as noticeable precisely because so little else is happening."
+    },
+    {
+      "key": "fire_crackling",
+      "triggerPattern": "\\b(fireplace|campfire|bonfire|candle(?:light)?|hearth)\\b",
+      "description": "Fire crackling and popping at an irregular, organic rhythm, with a faint warm hiss underneath -- intensity and proximity matched to how close and how large the visible flame is."
+    },
+    {
+      "key": "running_water_indoor",
+      "triggerPattern": "\\b(faucet|sink|running water|shower|bathtub|tap\\b)\\b",
+      "description": "Water running and splashing in a continuous stream, its sound matched exactly to the visible water contact in the shot -- starting and stopping in sync with a tap being turned on or off, never continuing after the water is shown stopped."
+    },
+    {
+      "key": "quiet_room_tone_default",
+      "triggerPattern": "",
+      "description": "Faint, realistic room tone appropriate to the setting -- a barely-audible ambient hum, the subtlest sense of air and space rather than a dead, anechoic silence. Never louder than a whisper under any dialogue or foreground sound."
+    }
+  ]
+}

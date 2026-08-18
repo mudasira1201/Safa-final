@@ -1,0 +1,362 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "id": "r-1",
+      "kind": "voiceonly_has_body",
+      "rule": "A role that only narrates or comments (narrator, commentator, off-screen voice) must never be given an on-screen body; it exists only as voice-over.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-2",
+      "kind": "physics_violation",
+      "rule": "An object established as airborne or in motion in one shot must not appear stationary or back in a hand in the very next shot unless time has explicitly passed.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-3",
+      "kind": "morphing_transformation",
+      "rule": "No person or animal transforms into a different person, animal, age, or gender within or across shots; every subject keeps one identity.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-4",
+      "kind": "duplicated_object",
+      "rule": "A single-instance object (the ball, the letter, the weapon, the vehicle) appears exactly once per frame and is one continuous instance across the film.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-5",
+      "kind": "environment_changed",
+      "rule": "The location, layout, and furniture of a scene stay fixed across its shots; a close-up must not add architecture (extra stairs, new doors) or swap the setting (interior to forest).",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-6",
+      "kind": "wrong_equipment",
+      "rule": "Equipment matches its real-world domain in shape and use (a cricket bat is a flat willow blade, not a rounded baseball bat; a torch stays a torch, not a candle).",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-7",
+      "kind": "wrong_zone",
+      "rule": "People stay in the zone their role allows: coaches in the dugout, spectators in the stands, fielders in the field, and no one crosses to a non-adjacent zone between consecutive shots.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-8",
+      "kind": "physics_violation",
+      "rule": "Bodies and hands do not pass through walls, furniture, or each other; contact is surface contact, never overlap or clipping.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-9",
+      "kind": "physics_violation",
+      "rule": "A running or walking character covers real ground while the background streams past; never a treadmill effect with a static background.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-10",
+      "kind": "extra_people",
+      "rule": "Only the entities named for a shot appear in the foreground; no duplicate of the same person in one frame and no unscripted extra people appearing.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-11",
+      "kind": "other",
+      "rule": "A door is opened once to enter or exit; a person already inside does not re-open the same door and re-enter, and does not flicker between inside and outside across cuts.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-12",
+      "kind": "other",
+      "rule": "A light switched off stays off and the following frames are darker; a light switched off must actually change the lighting.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-13",
+      "kind": "wrong_equipment",
+      "rule": "A photograph or letter shown to be read faces its printed side toward the reader's eyes, not the blank back.",
+      "addedBy": "seed",
+      "addedAt": "2026-07-21T00:00:00Z"
+    },
+    {
+      "id": "r-14",
+      "kind": "physics_violation",
+      "rule": "Money, coins, or goods exchanged between two people are a fixed, conserved quantity: the amount one hand closes on must visibly match what the other hand offered, never a partial or reduced amount with no explanation.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-15",
+      "kind": "physics_violation",
+      "rule": "Once a hand releases or opens to drop an object, that object falls and obeys gravity immediately; it never remains stuck to or hovering above an open palm.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-16",
+      "kind": "physics_violation",
+      "rule": "A vehicle only moves, starts, or has its wipers/lights change state when a cause is shown (a driver visibly operating it, or the shot explicitly states it is driving); a parked or background vehicle stays inert, and one vehicle moving never causes an unrelated vehicle behind or beside it to move in sympathy.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-17",
+      "kind": "environment_changed",
+      "rule": "A supernatural entity, silhouette, reflection-only figure, or any other non-physically-present presence keeps a consistent position and distance relative to the living characters shot to shot; it does not silently relocate from 'opposite them' to 'standing beside them' without a shot that shows the move.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-18",
+      "kind": "wrong_wardrobe",
+      "rule": "A character's exact outfit (garment, colour, layers) stays identical across every shot of one continuous scene with no time skip; changing jacket, dress, or wardrobe piece between consecutive shots of the same scene is never correct unless the script explicitly stages a change of clothes.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-19",
+      "kind": "other",
+      "rule": "A worn accessory established in a shot (hat, cap, helmet, glasses, bag, watch) stays on the character in every following shot of the same continuous scene unless a shot explicitly shows it being removed.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-20",
+      "kind": "other",
+      "rule": "A character who is physically struck, hit, or impacted shows an immediate, visible reaction on their face or body (a flinch, a grimace, a breath caught) in the same or the very next shot; zero reaction to a landed blow reads as broken, not stoic.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-21",
+      "kind": "physics_violation",
+      "rule": "A body knocked down, thrown, or pinned stays down or displaced until a shot explicitly shows them recovering (pushing up, rolling, standing); the same person must never be lying down in one shot and standing unmarked, mid-fight, in the next with no recovery shown.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-22",
+      "kind": "environment_changed",
+      "rule": "A reflective surface (mirror, window, glass, car windshield) shows a reflection of the people and world that are actually present in the room or scene; it is not a second, separate camera view stacked into the same pane, and it never adds a person who is not really there in the room (unless the beat is explicitly a haunted/disagreeing reflection, in which case say so in both the description of the real space and the reflection).",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-23",
+      "kind": "other",
+      "rule": "A physical action already fully covered by ground in an earlier shot (a runner sprinting down a lane, a car driving a stretch of road) is never re-covered from the same starting point in a later shot of the same chase/drive; each new shot of continuous movement starts from where the character or vehicle actually ended up, further along, not back at an earlier position.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-24",
+      "kind": "other",
+      "rule": "Two consecutive shots never have a character speak the same line of dialogue again, near-verbatim; once a line has been delivered, the next shot either advances to a new line or plays silently as a reaction/listening beat.",
+      "addedBy": "issues-review",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-25",
+      "kind": "extra_people",
+      "rule": "In a scene with no crowd (a private home, a small fixed cast, an interior with only the named characters), zero background strangers ever appear, foreground or background -- 'no one in the foreground' is not enough, the location must have nobody else in it at all, not even blurred or distant.",
+      "addedBy": "issues-review-2",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-26",
+      "kind": "environment_changed",
+      "rule": "A mirror, reflective glass, or duplicate reflection of a character must never appear in a shot whose own description did not explicitly call for one; a reveal of a mirror is achieved by describing the full end state of a two-endpoint shot, never by camera movement alone discovering geometry that was not in the starting frame.",
+      "addedBy": "issues-review-2",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-27",
+      "kind": "other",
+      "rule": "A recurring but unnamed visual element that is not a full character (a baby, a pet, a photograph of a person) must be given one fixed, concrete visual description the first time it appears, and that exact description repeated verbatim every later time it appears, so it reads as the SAME baby/pet/photo and not a different one each shot.",
+      "addedBy": "issues-review-2",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-28",
+      "kind": "other",
+      "rule": "A shot with zero named characters (an object insert: a screen, a monitor, a crib, a table) renders exactly zero people anywhere in frame -- no stray hand, foot, leg, or partial body may appear even briefly.",
+      "addedBy": "issues-review-2",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-29",
+      "kind": "other",
+      "rule": "A character holding, raising, or pointing a personal object (a phone as a flashlight, a torch) is USING it, not giving it away -- it stays in their hand for the rest of the scene unless the script explicitly describes it being handed to someone; never write one shot where a character's hand is empty 'after giving' an object and a later shot where they are holding that same object again with no scene showing it returned.",
+      "addedBy": "issues-review-3",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-30",
+      "kind": "other",
+      "rule": "When the user's own script includes an explicit numbered shot list, an establishing/wide shot in that list stays a wide shot in the generated plan -- it must not be silently replaced by another close-up insert of the same object as a neighboring shot, which loses the sense of place the opening of a scene needs.",
+      "addedBy": "issues-review-3",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-31",
+      "kind": "other",
+      "rule": "No more than two consecutive shots may be dominated by the same reused prop or surface filling the frame (a monitor screen, a mirror, a window) -- alternate with a shot of the characters themselves (their faces, their reaction, their body in the room) rather than cutting from screen-insert to screen-insert repeatedly, which reads as static and repetitive rather than as a directed scene.",
+      "addedBy": "issues-review-3",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-32",
+      "kind": "narrative_gap",
+      "rule": "A shot that shows a stimulus changing state (a monitor feed, a screen, a sound source, a phone) and drawing a character's attention must be preceded or accompanied, in this shot or the one immediately before it, by that character visibly NOTICING it first -- a head turning toward it, eyes cutting to it, a hand reaching for it. A hard cut from a character absorbed in one thing straight to them transfixed by an unrelated new stimulus, with no noticing beat anywhere, reads as a random cutaway rather than a reveal. (Real failure: parents staring into an empty crib cut straight to a close-up of the monitor already showing the baby, with no shot of them turning toward the monitor or a tone drawing their eyes to it -- the audience could not tell who noticed it first or when.)",
+      "addedBy": "issues-review-4",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-33",
+      "kind": "narrative_gap",
+      "rule": "When the story implies a character is comparing two things -- what a screen, photo, or report shows versus the real object or person in front of them -- write the beat that closes the distance between them ('steps closer to compare', 'moves nearer to look for herself') as its own shot or as part of an existing one, rather than cutting straight from the screen's content to the changed real-world object with no character ever shown investigating the discrepancy.",
+      "addedBy": "issues-review-4",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-34",
+      "kind": "narrative_gap",
+      "rule": "A character's gaze redirected toward a new reflective surface (a mirror, a window, a screen) because of something they sense but do not want to face head-on needs the redirection stated as its own beat, with the motivation named in plain text -- 'too afraid to turn around, she lifts her eyes to the mirror instead' -- rather than cutting straight to the mirror shot with no stated reason. An unmotivated glance at a mirror reads as arbitrary blocking, not dread.",
+      "addedBy": "issues-review-4",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-35",
+      "kind": "narrative_gap",
+      "rule": "A story built around one central unresolved question (a missing person, a vanished object, an ambiguous entity, an unexplained disappearance) must not simply stop with the question hanging and nothing else. The mystery may stay deliberately unresolved -- that is a legitimate genre choice, especially in horror/thriller -- but the closing shot(s) must carry at least one concrete implication that points a direction (a detail, a piece of evidence, a final image, a line of dialogue) rather than ending on the open question with nothing anchoring the audience's read of it.",
+      "addedBy": "issues-review-4",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-36",
+      "kind": "narrative_gap",
+      "rule": "When a film OPENS on an environmental or off-screen stimulus before any character has appeared (a sound, static, a light, an object changing state), the shot where the protagonist first appears must show their CAUSAL REACTION to that opening stimulus -- waking with a start, sitting up, turning toward the sound, eyes snapping open -- not cut straight to them already up and mid-action (already walking, already dressed and moving toward the goal) with no shot of the trigger reaching them. Without that reaction shot, the audience never sees the moment the story actually started for that character -- it reads as though the scene simply resumes mid-stream. (Real failure: a film opened on baby-monitor static with no characters on screen, then cut directly to the mother already up and walking down the hallway saying 'just a bad dream' -- nothing showed the static, or the dream, actually waking her.)",
+      "addedBy": "issues-review-5",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-37",
+      "kind": "script_fidelity",
+      "rule": "NEVER invent a brand-new, never-before-cast character partway through the film to receive, take, or interact with an object or beat the script did not describe -- especially not as a way to 'complete' a hand-off that felt unfinished. If a person was never named in the script and never added to the top-level cast, they do not exist; the correct default is that an object stays in the hand of the character who already has it (per the existing object-ownership rule), not that a stranger materializes to take it off their hands. (Real failure: a script's final beat was 'he turns and walks back into the crowd' carrying what he just bought at a market stall -- the generated film instead invented an unscripted passerby and had him hand the item to her, a hand-off that exists nowhere in the source material and directly contradicts the script's own ending.)",
+      "addedBy": "issues-review-6",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-38",
+      "kind": "narrative_gap",
+      "rule": "Every shot's CONTINUITY recap of 'where the previous shot ended' must describe the SAME moment the immediately preceding shot in the array actually ends on -- never a chronologically LATER moment than what this shot itself is about to show. Before finalizing the shot list, walk it in order and check: does shot N+1 pick up from shot N's real end state, or does it contradict it by showing an earlier point in time? This especially happens when an establishing/entrance shot is added late (to fix a character appearing with no introduction) and lands in the wrong array position. (Real failure: a shot showing a mother reacting to her son already standing inside the house was placed BEFORE a shot showing that same son still outside, facing the closed door, about to knock -- the son appeared to un-enter the house between cuts.) If a newly-added shot establishes something, it belongs immediately BEFORE the moment it establishes, never after.",
+      "addedBy": "issues-review-6",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-39",
+      "kind": "composition_choice",
+      "rule": "Reflective-surface composition (a mirror, monitor, glass door, or window reflection) is a tool suited to suspense, horror, or mystery, where hiding a character behind glass or revealing something through a reflection IS the point. For a warm, intimate, or slice-of-life scene (a reunion, a quiet conversation, a small transaction, a tender goodbye), default to DIRECT coverage of the characters' faces and bodies instead. Reaching for a mirror, door-glass, or window reflection as the PRIMARY way to show two people through an emotionally important scene undercuts the intimacy the scene needs, even when each individual reflection shot is composed correctly per the mirror/monitor rules. Match the technique to the genre: glass and reflections for dread and misdirection, direct faces for warmth and connection.",
+      "addedBy": "issues-review-6",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-40",
+      "kind": "narrative_gap",
+      "rule": "A single, unified 'setting' description covering an entire fixed multi-room location (a whole house: bedroom, hallway, nursery all described together in one paragraph, repeated verbatim in every shot for continuity) does not excuse skipping the actual movement between those rooms. A character who is lying in bed reaching for a phone in one shot must not simply appear standing at a door in a DIFFERENT room, phone already in hand and already switched on, in the next shot -- the walk between the rooms, and picking up and turning on the phone, still needs to be shown or explicitly covered within one shot's two endpoints, exactly as it would if the rooms had separate, distinct setting descriptions. Sharing one big geography paragraph across every shot is a continuity aid, not a license to teleport between the rooms it describes.",
+      "addedBy": "issues-review-6",
+      "addedAt": "2026-07-24T00:00:00Z"
+    },
+    {
+      "id": "r-41",
+      "kind": "physics_violation",
+      "rule": "A reflected entity that is not physically in the room (a silhouette, a ghostly figure, an ambiguous presence seen only in a mirror or window) must be described as COMPLETELY STATIONARY across the whole shot -- it does not walk, glide, drift, or move into position on its own. If the reveal requires it to go from 'absent' to 'present', that transition happens ACROSS THE CUT (it is simply there in the endFrame, having not been in the startFrame), never as visible locomotion within one continuous shot. A camera or character turning to reveal it is fine; the entity animating itself into frame is not. (Real failure: a mirror shot describing a child-sized, motionless silhouette 'standing rigidly' in a corner was rendered instead as a fully grown figure visibly walking across the room toward the mirror -- the renderer invented walking motion to connect two states that should never have been connected by motion at all.)",
+      "addedBy": "issues-review-7",
+      "addedAt": "2026-07-25T00:00:00Z"
+    },
+    {
+      "id": "r-42",
+      "kind": "environment_changed",
+      "rule": "A fixed set-piece (a door, a mirror, a piece of furniture, a window) that appears in multiple shots of the same continuous scene stays on the SAME side of frame and in the SAME position relative to the room in every one of those shots, exactly like the existing rule for which side of frame a CHARACTER stands on. State its position explicitly and consistently (\"the door on the right wall\", \"the mirror on the left side of the closet\") rather than leaving it to be re-invented shot to shot. (Real failure: a front door was shown opening from the right side of frame in one shot and the left side in the next shot of the same continuous entrance, with nobody visibly moving it -- the geometry of the room silently flipped.)",
+      "addedBy": "issues-review-7",
+      "addedAt": "2026-07-25T00:00:00Z"
+    },
+    {
+      "id": "r-43",
+      "kind": "physics_violation",
+      "rule": "An object hand-off (money, a parcel, any item passed from one character's hand to another's) is STRICTLY ONE-WAY within its scene once it happens: the giving hand releases and does not reach for the object again, and the receiving character keeps holding it through every subsequent shot until the script explicitly stages them setting it down or handing it to someone else. Never write or allow a sequence where the item appears to move back to the original holder after the transfer is complete -- that has no narrative reason and reads as the renderer losing track of who is holding what. If a hand-off shot is rendering as back-and-forth or repeated fumbling, treat it as a rendering failure to flag for a redo with the same one-way instruction restated even more explicitly (name which hand releases, which hand closes, and that neither reverses), not as an invitation to add a second exchange.",
+      "addedBy": "issues-review-7",
+      "addedAt": "2026-07-25T00:00:00Z"
+    },
+    {
+      "id": "r-44",
+      "kind": "morphing_transformation",
+      "rule": "Extends the recurring-visual-element rule (a baby, a pet, a photo gets one fixed description repeated verbatim): that fixed description's AGE AND SCALE are locked exactly as hard as its appearance. An element established as an infant, a small child, or a 'child-sized' silhouette must never appear larger, older, or adult-sized in any later shot of the same film -- there is no beat in a script that turns a baby into a walking, grown child within one continuous night, and if the story genuinely needs a growth reveal it must be stated explicitly as its own scripted beat, never left to be inferred. (Real failure: a story's missing infant was represented in a mirror reveal by 'a child-sized silhouette' -- the rendered video showed a fully grown figure the size of an adult, contradicting the story's own premise that only a baby had gone missing.)",
+      "addedBy": "issues-review-7",
+      "addedAt": "2026-07-25T00:00:00Z"
+    },
+    {
+      "id": "r-45",
+      "kind": "wrong_equipment",
+      "rule": "An object established with a specific identity (a phone in a backpack's OUTER POCKET, not loose in a handbag; a wallet in a bifold, not a pouch) keeps that exact identity and container in every later shot that refers back to it -- never silently substitute a different but similar object or container for it. When a later shot says a character 'checks the pocket' or 'reaches for the bag', restate the FULL original description of that specific container (not just a generic synonym for it) so the renderer cannot swap it for a different but similar-sounding object. (Real failure: a wallet established inside a backpack's outer pocket was checked, in a later shot, by the victim reaching into what rendered as an entirely different bag -- the specific container silently changed identity mid-film.)",
+      "addedBy": "issues-review-7",
+      "addedAt": "2026-07-25T00:00:00Z"
+    },
+    {
+      "id": "r-46",
+      "kind": "narrative_gap",
+      "rule": "Once a transaction or exchange between two characters is fully complete and the scene shows a character beginning to leave (turning away, walking off), the film must not stage them returning to the same person to re-do, re-confirm, or repeat the exchange that already finished -- that has no narrative reason and reads as the shot list running out of new material and looping back on itself. If the scene is over, END it there (the walk away, the exit) rather than manufacturing a reason to come back. A return is only valid when the script itself writes a new reason for it (forgot something specific, a new line of dialogue, a new development) -- never as an unmotivated repeat of the same completed beat.",
+      "addedBy": "issues-review-8",
+      "addedAt": "2026-07-26T00:00:00Z"
+    },
+    {
+      "id": "r-47",
+      "kind": "physics_violation",
+      "rule": "Extends the object-ownership rule (r-29, previously scoped to personal electronics like a phone or torch) to ANY object a character has just received from someone else -- a parcel, a purchase, a letter, a bag. Once handed over and accepted, that object stays continuously visible in the receiving character's grip in every following shot of them in that scene (walking away, reacting, leaving) until the script explicitly shows them setting it down or handing it to someone else. It must never vanish from their hand in one shot and reappear in the next with no shot showing it being set down, dropped, or taken -- object permanence is not optional just because the camera cut away briefly.",
+      "addedBy": "issues-review-8",
+      "addedAt": "2026-07-26T00:00:00Z"
+    },
+    {
+      "id": "r-48",
+      "kind": "physics_violation",
+      "rule": "A character's head and neck rotate together WITH their shoulders and body, never independently and never further than the body itself turns. A look-back over the shoulder, if the script calls for one, is described as a partial turn of head AND shoulders together, which holds briefly and then returns together -- never as the head alone spinning a full or near-full rotation while the legs and torso keep moving in an unrelated direction. If a shot's own motion text has a character walking away while also glancing back, state explicitly that only the head and upper shoulders turn partway, hold, then return to face forward, so the renderer has no room to invent a disconnected, cartoon-like head spin to cover the gap.",
+      "addedBy": "issues-review-8",
+      "addedAt": "2026-07-26T00:00:00Z"
+    },
+    {
+      "id": "r-49",
+      "kind": "physics_violation",
+      "rule": "An object hand-off between two characters (coins, a parcel, any item) is described as a clean, deliberate, completed grip: the giving hand presents it, the receiving hand closes around it with visible fingers wrapping it, and the exchange is a single continuous contact -- never scattering, spilling, or dropping mid-transfer. Money specifically transfers as one compact, held handful, not loose pieces that separate or fall. State the grip explicitly in the motion text (e.g. \"his fingers close fully around the parcel, gripping it naturally\") rather than leaving the moment of contact to be inferred, which is exactly where an object has rendered as floating against an open palm with no grip at all.",
+      "addedBy": "issues-review-8",
+      "addedAt": "2026-07-26T00:00:00Z"
+    },
+    {
+      "id": "r-50",
+      "kind": "other",
+      "rule": "An ORDINARY, benign transaction or hand-off (buying goods, paying, receiving change, a routine goodbye) must be described in NEUTRAL OR WARM emotional terms, not tense or guarded ones -- do not add 'brow furrowed, jaw set, eyes hard and focused, no smiling, no relaxing' or 'brief eye contact' language to a beat the script never framed as tense. That specific combination of cues (a hard/serious expression plus minimal, guarded eye contact during an exchange of goods or money) reads to an automated safety classifier as a covert or illicit exchange even when the underlying scene is completely innocent, and has caused a real, otherwise-unremarkable market transaction shot to be refused outright by the video provider on content grounds. Reserve hard/serious expressions and guarded eye contact for beats the story ACTUALLY intends as tense, dangerous, or adversarial; a routine sale, a friendly handoff, or a warm goodbye should read as such -- relaxed posture, a genuine or polite smile, open eye contact -- even for minor/background characters like a shopkeeper. (Real failure: a market script's simple 'shopkeeper hands over a parcel, buyer takes it' beat was elaborated into 'brow furrowed, jaw set, eyes focused and intent... no smiling, no relaxing... brief eye contact' -- the added tension, not anything in the original script, triggered a content refusal that stopped the whole render.)",
+      "addedBy": "issues-review-9",
+      "addedAt": "2026-07-27T00:00:00Z"
+    },
+    {
+      "id": "r-51",
+      "kind": "other",
+      "rule": "A single shot must not combine more than one kind of simultaneous spatial event -- a new character entering the scene AND someone repositioning relative to another person, or an arrival AND a location change, packed into one beat. Confirmed real, across two different video providers: a shot asking for this many simultaneous spatial changes does not render as one coherent take -- it skips straight to an end state with no shown transition, since there was never a single, clean event for one continuous shot to depict. Give each kind of spatial event its own shot: the entrance completing first, then the reposition (or the next event) starting from where the first one left off.",
+      "addedBy": "identity-and-spatial-audit",
+      "addedAt": "2026-08-07T00:00:00Z"
+    }
+  ]
+}

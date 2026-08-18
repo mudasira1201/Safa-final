@@ -1,0 +1,311 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  id                   String    @id @default(cuid())
+  name                 String?
+  email                String?   @unique
+  emailVerified        DateTime?
+  image                String?
+  password             String? // bcrypt hash for email/password sign-in
+  plan                 String    @default("lite")
+  credits              Int       @default(1) // starting render credits — ONE free film (was 3)
+  freeFilmUsedAt       DateTime? // set once, forever: the free tier gets exactly ONE film
+  isAdmin              Boolean   @default(false)
+  blocked   Boolean  @default(false)
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?
+  createdAt            DateTime  @default(now())
+
+  referralCode String? @unique // lazy-generated on first request, like Project.shareToken
+  referredBy   String? // another User's id -- set ONCE via /api/referral/claim, permanent
+
+  accounts Account[]
+  sessions Session[]
+  projects Project[]
+  savedCharacters SavedCharacter[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
+  script        String   @db.Text // for type "song_video": the theme/mood prompt, not a screenplay -- reusing this column rather than adding a separate one, same convention "ad mode" already established (implicit via productImages, not its own column)
+  type          String   @default("film") // "film" (narrative, script -> breakdown) | "song_video" (theme -> lyrics+song -> breakdown timed to song sections) -- added 2026-08-05 for AI Song Videos | "ad" (short creative prompt, no narrative script -> a director-planned ad shot list, see ai-film-pro's 1c-ad-breakdown.ts) -- added 2026-08-09; every project before this field existed is implicitly "film" via the default
+  status        String   @default("draft") // draft | generating_options | awaiting_selection | rendering | done | failed
+  productImages String[] @default([]) // product photo URLs for ad-mode films; anchors every keyframe. Capped at 4 for a normal film, 1 for type "ad" (one hero product)
+  characterImages String[] @default([]) // uploaded character casting photos, matched to breakdown.characters by array order (1st photo -> 1st character) -- see ai-film-pro's steps/2-options.ts runOptions(). A character WITH a match skips AI-generated look options entirely.
+  resolution    String   @default("720p") // 480p | 720p | 1080p
+  aspectRatio   String   @default("16:9") // 16:9 landscape | 9:16 portrait | 1:1 square
+  audioEnabled  Boolean  @default(false)  // native Seedance audio (doubles video cost)
+  titleCardEnabled Boolean @default(true) // opening title card + closing fade in assembly; free (deterministic ffmpeg post, no generation cost) — user preference, not a pricing lever like audioEnabled above
+  creditsCost   Int      @default(1) // locked at creation from lib/pricing.ts's creditsFor(resolution+seconds+audio); every real charge (select, chat proceed/regen_all) spends exactly this, not a hardcoded 1 — keeps what the user was quoted and what they're billed in agreement
+  breakdownJson Json? // the shot breakdown, persisted between phases
+  optionsJson   Json? // { charId: { name, options: [imageUrl] } }
+  selectionJson Json? // { charId: chosenIndex }  (0-based)
+  locationOptionsJson   Json? // { locationId: { name, options: [imageUrl] } } -- same shape as optionsJson, for EVERY distinct location in the film (not just genuinely-revisited ones -- see ai-film-pro's 2b-location-options.ts)
+  locationSelectionJson Json? // { locationId: chosenIndex }  (0-based)
+  keyframesJson Json? // ordered [{ id, url, label, flagged?, flagReason? }] for keyframes_review, before clips ever render
+  clipsJson     Json? // ordered [{ id, url, label }] for review + assembly
+  songJson      Json? // type "song_video" only -- { lyrics: LyricsResult, song: { url, durationSec, sections } }, written by handleSong() (ai-film-pro's worker.ts); null for every "film" project
+  filmUrl       String?  @db.Text
+  shareToken    String?  @unique // public read-only share link; generated on first share
+  publicGallery Boolean  @default(false) // explicit public-gallery opt-in -- distinct from shareToken; a private share link must NOT imply gallery consent. Toggled via POST /api/projects/[id]/gallery.
+  error         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  blocked   Boolean  @default(false)   // <-- ADD THIS
+  reports   Report[]  
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs      Job[]
+  artifacts Artifact[]
+  messages  Message[]
+}
+
+model Job {
+  id        String   @id @default(cuid())
+  projectId String
+  type      String   @default("options") // options | render
+  status    String   @default("queued") // queued | running | done | failed | cancelled
+  stage     String   @default("Queued")
+  progress  Int      @default(0)
+  attempts  Int       @default(0)   // how many times this job has been tried
+  runAfter  DateTime?                // retry backoff: do not pick this up before this time
+  payload   Json?
+  // Stop button (safa-web POST /api/projects/[id]/cancel sets this true on the
+  // currently running/queued job). Polled from inside the keyframe/clip render
+  // loops (ai-film-pro's 4-images.ts/5-videos.ts, once per shot) — worker.ts's
+  // tick() catches the resulting JobCancelledError and flips status to
+  // "cancelled", clearing this flag on that same row. See lib/cancel.ts.
+  cancelRequested Boolean @default(false)
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Artifact {
+  id        String   @id @default(cuid())
+  projectId String
+  kind      String // character | location | image | clip | final | character_sheet | prop_sheet | location_sheet
+  url       String @db.Text
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// PERSISTENT CROSS-PROJECT CHARACTERS — a user's reusable "cast," saved from
+// a finished project's character-detail modal (see CreateFlow.tsx's
+// char-modal) and reattached to any FUTURE project via the "My characters"
+// picker in the attach-bar. Only referenceImageUrl actually reaches a new
+// render: ai-film-pro's steps/2-options.ts matches an uploaded/saved photo
+// to a breakdown character by array order and skips AI-generated options for
+// it, but that breakdown character's own name/appearance/voice are still
+// freshly invented by breakdownScript() from the NEW project's script text
+// alone -- name/appearance/voice here are UI-only labels for the user's own
+// picker, not something the pipeline reads. sourceProjectId is provenance
+// only, deliberately NOT a @relation, so deleting the source project can
+// never cascade into deleting a saved character.
+model SavedCharacter {
+  id                String   @id @default(cuid())
+  userId            String
+  name              String
+  appearance        String   @db.Text
+  voice             String   @default("narrator") // male_young|male_adult|male_old|female_young|female_adult|female_old|child|narrator -- ai-film-pro's CharacterSchema enum; stored as a plain string (same convention Project.status/type already use), validated against the allowlist in the API route, not the DB.
+  referenceImageUrl String   @db.Text
+  sourceProjectId   String?
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// REFERRAL PROGRAM -- a reward is QUEUED here (by the Stripe webhook, on the
+// referred user's first paid checkout) never granted automatically; see
+// app/api/admin/referrals/route.ts's approve/reject actions, same
+// review-before-payout discipline as the Report model's takedown flow.
+model ReferralReward {
+  id             String    @id @default(cuid())
+  referrerId     String
+  referredUserId String    @unique // one reward per referred user, ever -- guards a Stripe webhook retry from double-queuing
+  plan           String // the plan the referred user actually purchased
+  rewardCredits  Int
+  status         String    @default("pending") // pending | approved | rejected
+  createdAt      DateTime  @default(now())
+  reviewedAt     DateTime?
+
+  @@index([status, createdAt])
+}
+
+model AuthToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  purpose   String // "verify" | "reset"
+  expires   DateTime
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role      String // "user" | "assistant"
+  content   String
+  createdAt DateTime @default(now())
+}
+model Report {
+  id            String   @id @default(cuid())
+  projectId     String
+  reason        String
+  details       String   @default("") @db.Text
+  status        String   @default("open")
+  reporterEmail String?
+  createdAt     DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+model Spend {
+  id        String   @id @default(cuid())
+  userId    String?
+  projectId String?
+  kind      String            // clip | image
+  units     Float             // seconds for clips, count for images
+  amountUsd Float
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+}
+
+// PRIORITY 5 — mirrors ai-film-pro's OWN QaEvent model (same shared DB, same
+// table, two Prisma schemas describing it -- same pattern Spend/Artifact/etc.
+// already use across both codebases). Written by ai-film-pro's qa-runtime.ts,
+// read here by admin/overview/route.ts for the unverified-rate and
+// pass/fail-drift metrics.
+model QaEvent {
+  id           String   @id @default(cuid())
+  projectId    String?
+  shotId       String
+  stage        String // keyframe | identity | clip
+  outcome      String // pass | fail | unverified
+  findingKinds String   @default("") @db.Text
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([stage, createdAt])
+}
+
+// MIRRORS ai-film-pro's OWN ActionRuleCache model (same shared DB, same
+// table -- see that schema's own comment: durable store for
+// lib/actionLibrary.ts's generative-fallback action-rule inference cache).
+// safa-web never reads or writes this table directly -- it exists here
+// PURELY so `prisma db push` from THIS schema never tries to drop a real,
+// non-empty table (54 real cached rows, confirmed via a real `db push` dry
+// run 2026-08-04) that only the ai-film-pro side actually uses. Keep this
+// in sync with ai-film-pro/prisma/schema.prisma's own definition if that
+// one ever changes.
+model ActionRuleCache {
+  key          String   @id
+  label        String
+  category     String
+  precondition Json
+  effect       Json
+  createdAt    DateTime @default(now())
+}
+
+// PRIORITY 1 CONTENT SAFETY — every refusal from lib/scriptSafety.ts's
+// reviewScriptSafety(), hard or ambiguous. No relation to Project (unlike
+// Report above) since a refusal can happen at script-SUBMISSION time,
+// before a project row exists at all -- projectId is a free nullable
+// string, populated only when a project already exists (a chat-edit or
+// regen_all refusal on an existing project).
+model SafetyRefusal {
+  id            String   @id @default(cuid())
+  userId        String?
+  projectId     String?
+  stage         String   // script_submit | chat_edit | regen_all
+  categories    String   @db.Text // JSON array of {category, ambiguous, reason}
+  reason        String   @db.Text // human-readable summary shown to the user
+  scriptExcerpt String   @default("") @db.Text // truncated, not the full script
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+}
+
+model SupportTicket {
+  id        String   @id @default(cuid())
+  email     String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("open")
+  createdAt DateTime @default(now())
+  draftReply String? @db.Text
+}
+
+// Pre-launch ops-automation infra (2026-08-07). UNLIKE SafetyRefusal/QaEvent
+// above, this table is genuinely written from BOTH sides, not owned by one
+// repo and mirrored in the other: ai-film-pro's ops-monitor.ts writes
+// provider-balance/worker-health findings here, and safa-web's own refund-
+// audit cron writes refund-mismatch findings here too — both read the SAME
+// shared-DB table, same as every other mirrored model in this file. Keep in
+// sync with ai-film-pro/prisma/schema.prisma's own definition if this one
+// ever changes.
+model OpsFinding {
+  id         String    @id @default(cuid())
+  source     String // "provider-balance" | "worker-health" | "refund-audit" | ...
+  severity   String // "info" | "warn" | "critical"
+  message    String
+  detail     String    @default("") @db.Text
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([createdAt])
+  @@index([source, resolvedAt])
+}

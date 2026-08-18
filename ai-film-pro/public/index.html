@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>safa.ai — Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --peach-2:#FFD9C6;--peach-3:#FFEEE2;--peach-4:#FFF7F1;
+    --coral:#EE6C4D;--coral-deep:#DA5537;--ink:#2C211C;--ink-soft:#6E5B51;--muted:#9C8B80;--line:rgba(44,33,28,.13);
+    --display:"Bricolage Grotesque",system-ui,sans-serif;--ui:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--ui);color:var(--ink);min-height:100vh;
+    background:radial-gradient(900px 500px at 80% -10%,rgba(255,255,255,.5),transparent 60%),
+      linear-gradient(168deg,#FFC0A6,var(--peach-2) 32%,var(--peach-3) 62%,var(--peach-4));
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:26px 22px 70px}
+  .brand{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.02em}
+  .brand .dot{color:var(--coral)}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,4.5vw,40px);letter-spacing:-.02em;margin:26px 0 6px}
+  .lead{color:var(--ink-soft);font-size:16px;margin-bottom:22px}
+  .card{background:rgba(255,255,255,.8);border:1.5px solid rgba(255,255,255,.7);border-radius:18px;box-shadow:0 16px 40px rgba(80,40,25,.1);backdrop-filter:blur(10px);padding:20px;margin-bottom:18px}
+  textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;font-family:var(--ui);font-size:15px;color:var(--ink);padding:14px;min-height:130px;resize:vertical;line-height:1.55}
+  textarea:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 4px rgba(238,108,77,.14)}
+  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+  select{font-family:var(--ui);font-size:14px;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff}
+  .btn{font-family:var(--ui);font-weight:600;font-size:15px;border:0;cursor:pointer;border-radius:12px;padding:13px 24px;color:#fff;background:var(--coral);box-shadow:0 10px 24px rgba(238,108,77,.3);transition:background .2s,transform .15s}
+  .btn:hover{background:var(--coral-deep);transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn.ml{margin-left:auto}
+  .muted{color:var(--muted);font-size:13px}
+  .hidden{display:none}
+
+  .char{margin-bottom:20px}
+  .char .cn{font-weight:600;font-size:15px;margin-bottom:10px}
+  .opts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .opt{border:3px solid transparent;border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;aspect-ratio:3/4;position:relative;transition:border-color .15s,transform .15s}
+  .opt img{width:100%;height:100%;object-fit:cover;display:block}
+  .opt:hover{transform:translateY(-2px)}
+  .opt.sel{border-color:var(--coral)}
+  .opt.sel::after{content:"✓";position:absolute;top:6px;right:6px;width:22px;height:22px;background:var(--coral);color:#fff;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+
+  .bar{height:10px;border-radius:20px;background:rgba(44,33,28,.1);overflow:hidden;margin:14px 0 8px}
+  .bar > i{display:block;height:100%;width:5%;background:linear-gradient(90deg,var(--coral),#F2A65A);border-radius:20px;transition:width .5s ease}
+  .stage{font-weight:600;font-size:15px}
+  .spin{display:inline-block;width:15px;height:15px;border:2.5px solid rgba(238,108,77,.3);border-top-color:var(--coral);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-2px;margin-right:8px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  video{width:100%;border-radius:14px;background:#000;display:block;margin-bottom:14px}
+  .err{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.35);color:#a3271b;border-radius:12px;padding:14px;font-size:14px;line-height:1.5}
+  @media (max-width:560px){.opts{grid-template-columns:repeat(2,1fr)}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">safa<span class="dot">.ai</span></div>
+    <h1>Turn a script into a film</h1>
+    <p class="lead">Paste a short screenplay, choose your character, and safa builds the film — for real.</p>
+
+    <!-- STEP 1: script -->
+    <div class="card" id="cardScript">
+      <textarea id="script" placeholder="e.g. A woman leaves her home on a sunny morning, walks down a cobblestone street, buys fruit at a market, and returns home."></textarea>
+      <div class="row">
+        <label class="muted">Length</label>
+        <select id="length"><option>~20 sec</option><option selected>~1 min</option></select>
+        <button class="btn ml" id="genBtn" onclick="generate()">Generate</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: pick characters -->
+    <div class="card hidden" id="cardChars">
+      <div style="font-family:var(--display);font-weight:700;font-size:19px;margin-bottom:4px">Choose your character</div>
+      <p class="muted" style="margin-bottom:16px">Pick one look for each character — this becomes the person in every shot.</p>
+      <div id="charList"></div>
+      <div class="row"><button class="btn ml" id="makeBtn" onclick="createFilm()" disabled>Create film</button></div>
+    </div>
+
+    <!-- progress -->
+    <div class="card hidden" id="cardProg">
+      <div class="stage"><span class="spin"></span><span id="stageText">Working…</span></div>
+      <div class="bar"><i id="barFill"></i></div>
+      <p class="muted" id="progNote">This can take a few minutes — video generation is the slow part.</p>
+    </div>
+
+    <!-- result -->
+    <div class="card hidden" id="cardFilm">
+      <div style="font-family:var(--display);font-weight:700;font-size:19px;margin-bottom:12px">🎉 Your film is ready</div>
+      <video id="player" controls></video>
+      <div class="row">
+        <a class="btn" id="dlBtn" download="safa-film.mp4">Download</a>
+        <button class="btn ml" style="background:#fff;color:var(--ink);border:1.5px solid var(--line);box-shadow:none" onclick="location.reload()">Make another</button>
+      </div>
+    </div>
+
+    <div class="card err hidden" id="cardErr"></div>
+  </div>
+
+<script>
+  let jobId=null, chosen={}, chars=[];
+  const $=id=>document.getElementById(id);
+  const show=(id,on=true)=>$(id).classList.toggle('hidden',!on);
+  function fail(msg){show('cardProg',false);$('cardErr').textContent="Something went wrong: "+msg;show('cardErr',true);$('genBtn').disabled=false;}
+
+  async function generate(){
+    const script=$('script').value.trim();
+    if(!script){$('script').focus();return;}
+    $('genBtn').disabled=true; show('cardErr',false); show('cardProg',true); $('stageText').textContent="Starting…";
+    try{
+      const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({script})});
+      const d=await r.json(); if(d.error) return fail(d.error);
+      jobId=d.jobId; poll();
+    }catch(e){fail(e.message);}
+  }
+
+  function renderChars(){
+    show('cardProg',false); show('cardChars',true);
+    $('charList').innerHTML=chars.map(c=>`
+      <div class="char">
+        <div class="cn">${c.name}</div>
+        <div class="opts">${c.options.map((u,i)=>`<div class="opt" data-c="${c.id}" data-i="${i}" onclick="pick('${c.id}',${i},this)"><img src="${u}" alt="option ${i+1}"></div>`).join('')}</div>
+      </div>`).join('');
+  }
+  function pick(cid,i,el){
+    chosen[cid]=i;
+    el.parentElement.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    el.classList.add('sel');
+    $('makeBtn').disabled = Object.keys(chosen).length < chars.length;
+  }
+
+  async function createFilm(){
+    show('cardChars',false); show('cardProg',true); $('stageText').textContent="Building the character sheet…";
+    try{
+      await fetch('/api/select',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jobId,selections:chosen})});
+      poll();
+    }catch(e){fail(e.message);}
+  }
+
+  async function poll(){
+    try{
+      const r=await fetch('/api/status/'+jobId); const j=await r.json();
+      if(j.error) return fail(j.error);
+      if(j.stage==='awaiting-selection'){ chars=j.characters||[]; renderChars(); return; }
+      if(j.done && j.film){
+        show('cardProg',false);
+        $('player').src=j.film; $('dlBtn').href=j.film; show('cardFilm',true); return;
+      }
+      $('stageText').textContent=j.stage||'Working…';
+      $('barFill').style.width=(j.progress||5)+'%';
+      setTimeout(poll,2500);
+    }catch(e){ setTimeout(poll,3000); } // keep polling through transient hiccups
+  }
+</script>
+</body>
+</html>

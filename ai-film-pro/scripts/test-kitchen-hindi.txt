@@ -1,0 +1,13 @@
+[Target length: 15 seconds]
+[Language: Hindi]
+"LATE AGAIN"
+Genre: Domestic drama — Setting: small kitchen, night
+
+CHARACTERS
+MEERA — A woman in her early 30s. Slim build, average height. Warm brown skin, dark eyes. Black hair tied back in a simple bun. No facial hair. Wearing a plain cream kurta with sleeves pushed up. Voice: female_young.
+RAVI — A man in his 40s. Average build, average height. Brown skin, tired dark eyes. Short black hair, greying faintly at the temples. Light stubble, not a full beard. Wearing a wrinkled light-blue work shirt, top button undone, sleeves rolled up. Voice: male_adult.
+
+SHOT LIST
+1. Medium shot, Meera stands at the stove in the small kitchen at night, holding a steel tumbler of coffee, her back mostly to the doorway behind her.
+2. Wide shot, Ravi comes in through the doorway behind Meera, still in his wrinkled work shirt, looking tired. Meera turns toward him and says "You are late again."
+3. Medium close-up on Ravi, standing just inside the doorway, tumbler still in Meera's hand visible at the edge of frame. Ravi says "The bus broke down. I walked."

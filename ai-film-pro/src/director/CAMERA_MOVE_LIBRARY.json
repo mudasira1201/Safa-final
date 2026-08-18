@@ -1,0 +1,429 @@
+{
+  "version": 1,
+  "note": "Same architecture as PACE_LIBRARY.json/LENS_LIBRARY.json: when triggerPattern matches a shot's AUTHORED motion/description text, `description` is appended to that shot's `camera` field, marker-gated for idempotence across recompiles (description MUST literally start with marker, or the idempotency check can never find it and will duplicate on every recompile). Only the SINGLE best match applies per shot (see MAX_CAMERA_MOVE_PER_SHOT in compiler.ts) — a shot cannot be both a dolly-in and a crash-zoom at once. UNLIKE PACE_LIBRARY, these descriptions ARE SUPPOSED to contain real camera-movement vocabulary (dolly, pan, orbit, crane, etc.) since describing movement is this library's entire purpose — CAMERA_MOVE_RE (both the copy in steps/5-videos.ts gating camera_fixed/closeUp/staticCameraCandidate, and compiler.ts's own separate copy in the locomotion-must-move-camera fix) has been expanded to recognize this vocabulary so a shot enriched from here still correctly computes as NOT static. Entries are intentionally ORDERED most-specific-first within each family (e.g. crash_zoom_in before the bare zoom_in) since a more specific phrase's own words are often a substring of a more generic pattern too, and array order decides which single entry wins when more than one technically matches. Translated from real named camera-move vocabulary (confirmed via research into what a competitor's one-click preset library actually offers) into full cinematography direction — same craft level as LENS_LIBRARY's own entries, not just the name restated. A handful of the source names were skipped as untranslatable UI/input features rather than describable camera language (e.g. head-tracking, an eating/mouth-focus preset) — every entry here is real, describable, physically-groundable camera direction.",
+  "moves": [
+    {
+      "key": "crash_zoom_in",
+      "name": "Crash Zoom In",
+      "family": "push_pull",
+      "triggerPattern": "\\b(crash\\s*zoom\\s*in|snap\\s*zoom\\s*in|whip\\s*zoom\\s*in)\\b",
+      "marker": "Crash zoom in:",
+      "description": "Crash zoom in: an extremely fast, punchy zoom that snaps in on the subject in well under a second, landing hard on the new framing with a slight settle rather than a smooth glide — used for sudden emphasis or comedic/dramatic punctuation, not a graceful reveal.",
+      "negatives": ["a slow or gradual zoom instead of a hard, fast snap", "the camera physically traveling (a dolly) instead of a pure lens zoom"]
+    },
+    {
+      "key": "crash_zoom_out",
+      "name": "Crash Zoom Out",
+      "family": "push_pull",
+      "triggerPattern": "\\b(crash\\s*zoom\\s*out|snap\\s*zoom\\s*out|whip\\s*zoom\\s*out)\\b",
+      "marker": "Crash zoom out:",
+      "description": "Crash zoom out: an extremely fast, punchy zoom that snaps out to a wider framing in well under a second, landing hard with a slight settle rather than a smooth glide — used to suddenly reveal scale or context, not a graceful pull-back.",
+      "negatives": ["a slow or gradual zoom instead of a hard, fast snap", "the camera physically retreating (a dolly) instead of a pure lens zoom"]
+    },
+    {
+      "key": "rapid_zoom_in",
+      "name": "Rapid Zoom In",
+      "family": "push_pull",
+      "triggerPattern": "\\b(rapid\\s*zoom\\s*in|quick\\s*zoom\\s*in)\\b",
+      "marker": "Rapid zoom in:",
+      "description": "Rapid zoom in: a fast lens zoom toward the subject, quicker and more energetic than a standard zoom but with a smoother, more controlled finish than a crash zoom's hard snap.",
+      "negatives": ["a standard slow zoom", "a hard crash-zoom snap landing"]
+    },
+    {
+      "key": "rapid_zoom_out",
+      "name": "Rapid Zoom Out",
+      "family": "push_pull",
+      "triggerPattern": "\\b(rapid\\s*zoom\\s*out|quick\\s*zoom\\s*out)\\b",
+      "marker": "Rapid zoom out:",
+      "description": "Rapid zoom out: a fast lens zoom away from the subject, quicker and more energetic than a standard zoom but with a smoother, more controlled finish than a crash zoom's hard snap.",
+      "negatives": ["a standard slow zoom", "a hard crash-zoom snap landing"]
+    },
+    {
+      "key": "super_dolly_in",
+      "name": "Super Dolly In",
+      "family": "push_pull",
+      "triggerPattern": "\\b(super\\s*dolly\\s+in|aggressive\\s+dolly\\s+in|fast\\s+dolly\\s+in)\\b",
+      "marker": "Super dolly in:",
+      "description": "Super dolly in: an unusually fast, energetic forward dolly that closes distance far more quickly than a normal push — the approach still reads as one continuous physical move, not a cut, but with real urgency and speed behind it.",
+      "negatives": ["a crash zoom substituting for genuine camera travel", "the fast approach reading as jump cuts instead of one continuous glide"]
+    },
+    {
+      "key": "super_dolly_out",
+      "name": "Super Dolly Out",
+      "family": "push_pull",
+      "triggerPattern": "\\b(super\\s*dolly\\s+out|aggressive\\s+dolly\\s+out|fast\\s+dolly\\s+out)\\b",
+      "marker": "Super dolly out:",
+      "description": "Super dolly out: an unusually fast, energetic backward dolly that opens distance far more quickly than a normal pull — the retreat still reads as one continuous physical move, revealing the surrounding space abruptly but smoothly, not in a cut.",
+      "negatives": ["a crash zoom-out substituting for genuine camera travel", "the fast retreat reading as jump cuts instead of one continuous glide"]
+    },
+    {
+      "key": "dolly_zoom",
+      "name": "Dolly Zoom",
+      "family": "push_pull",
+      "triggerPattern": "\\b(dolly\\s*zoom|vertigo\\s+effect|hitchcock\\s+zoom|zolly)\\b",
+      "marker": "Dolly zoom:",
+      "description": "Dolly zoom: the camera physically dollies in one direction while the lens zooms the opposite direction at a matched rate, keeping the subject's size in frame constant while the background dramatically stretches or compresses around them — a disorienting, vertigo-like warp reserved for a genuine moment of shock or realization.",
+      "negatives": ["a plain dolly or plain zoom without the counter-move", "the subject changing size instead of staying locked", "the background staying visually stable instead of warping"]
+    },
+    {
+      "key": "zoom_in",
+      "name": "Zoom In",
+      "family": "push_pull",
+      "triggerPattern": "\\b(zooms?\\s+in|zooming\\s+in)\\b",
+      "marker": "Zoom in:",
+      "description": "Zoom in: a steady lens zoom toward the subject, magnifying the frame while the camera's physical position stays fixed — a smooth, controlled optical approach, not physical travel.",
+      "negatives": ["the camera physically traveling (a dolly) instead of a pure lens zoom", "an abrupt or stepped zoom instead of one smooth continuous move"]
+    },
+    {
+      "key": "zoom_out",
+      "name": "Zoom Out",
+      "family": "push_pull",
+      "triggerPattern": "\\b(zooms?\\s+out|zooming\\s+out)\\b",
+      "marker": "Zoom out:",
+      "description": "Zoom out: a steady lens zoom away from the subject, widening the frame while the camera's physical position stays fixed — a smooth, controlled optical retreat, not physical travel.",
+      "negatives": ["the camera physically retreating (a dolly) instead of a pure lens zoom", "an abrupt or stepped zoom instead of one smooth continuous move"]
+    },
+    {
+      "key": "dolly_in",
+      "name": "Dolly In",
+      "family": "push_pull",
+      "triggerPattern": "\\b(dolly\\s*(?:ing)?\\s+in|dollies\\s+in|camera\\s+push(?:es|ing)?\\s+in|push(?:es|ing)?\\s+in\\s+(?:on|toward)|moves?\\s+in\\s+closer)\\b",
+      "marker": "Dolly in:",
+      "description": "Dolly in: the camera physically moves forward on a smooth, level path, closing the real distance between the lens and the subject while the focal length stays fixed — the background compresses and grows nearer at the same rate as the subject, not a zoom's flattening magnification.",
+      "negatives": ["a zoom substituting for a real dolly move", "the background staying static while only the subject appears to grow", "a jerky or stepped approach instead of one continuous glide"]
+    },
+    {
+      "key": "dolly_out",
+      "name": "Dolly Out",
+      "family": "push_pull",
+      "triggerPattern": "\\b(dolly\\s*(?:ing)?\\s+out|dollies\\s+out|camera\\s+pulls?\\s+(?:back|away)|pull(?:s|ing)?\\s+back|moves?\\s+(?:back|away)\\s+from)\\b",
+      "marker": "Dolly out:",
+      "description": "Dolly out: the camera physically retreats on a smooth, level path, opening real distance between the lens and the subject while the focal length stays fixed — more of the surrounding space steadily reveals itself as the subject recedes, a continuous glide, not a cut to a wider lens.",
+      "negatives": ["a zoom-out substituting for a real dolly retreat", "the reveal happening in a sudden jump instead of continuously", "the subject shrinking without the background genuinely opening up"]
+    },
+    {
+      "key": "dolly_left",
+      "name": "Dolly Left",
+      "family": "push_pull",
+      "triggerPattern": "\\b(dolly\\s*(?:ing)?\\s+left|trucks?\\s+left|camera\\s+(?:slides|glides)\\s+left)\\b",
+      "marker": "Dolly left:",
+      "description": "Dolly left: the camera trucks sideways to the left on a level, continuous path, keeping the subject at a consistent distance while the background streams past horizontally behind them — a lateral glide, not a pan pivoting on a fixed point.",
+      "negatives": ["a pan (pivoting in place) substituting for real lateral travel", "the subject drifting out of frame instead of staying tracked", "uneven or stepped lateral motion"]
+    },
+    {
+      "key": "dolly_right",
+      "name": "Dolly Right",
+      "family": "push_pull",
+      "triggerPattern": "\\b(dolly\\s*(?:ing)?\\s+right|trucks?\\s+right|camera\\s+(?:slides|glides)\\s+right)\\b",
+      "marker": "Dolly right:",
+      "description": "Dolly right: the camera trucks sideways to the right on a level, continuous path, keeping the subject at a consistent distance while the background streams past horizontally behind them — a lateral glide, not a pan pivoting on a fixed point.",
+      "negatives": ["a pan (pivoting in place) substituting for real lateral travel", "the subject drifting out of frame instead of staying tracked", "uneven or stepped lateral motion"]
+    },
+    {
+      "key": "double_dolly",
+      "name": "Double Dolly",
+      "family": "push_pull",
+      "triggerPattern": "\\b(double\\s*dolly)\\b",
+      "marker": "Double dolly:",
+      "description": "Double dolly: a single shot combining two distinct dolly moves back to back — for example dollying in toward the subject, then reversing to dolly back out (or the reverse order) — read as one continuous, deliberate two-stage camera move, not two separate cuts.",
+      "negatives": ["two separate shots edited together instead of one continuous move", "only a single dolly direction with no second stage"]
+    },
+    {
+      "key": "whip_pan",
+      "name": "Whip Pan",
+      "family": "pan_tilt",
+      "triggerPattern": "\\b(whip\\s*pan|swish\\s*pan)\\b",
+      "marker": "Whip pan:",
+      "description": "Whip pan: an extremely fast horizontal pan that blurs the image into unreadable motion streaks mid-move, then snaps into sharp focus on the new framing — used as a hard punctuation or transition, not a graceful reveal.",
+      "negatives": ["a slow or moderate pan instead of a blur-inducing fast whip", "the image staying sharp throughout instead of streaking mid-move"]
+    },
+    {
+      "key": "pan_left",
+      "name": "Pan Left",
+      "family": "pan_tilt",
+      "triggerPattern": "\\b(pans?\\s+left|panning\\s+left)\\b",
+      "marker": "Pan left:",
+      "description": "Pan left: the camera pivots horizontally to the left from a fixed position, the lens sweeping across the scene while the camera's physical location stays anchored — a smooth rotational sweep, not lateral travel.",
+      "negatives": ["the camera's physical position moving (a dolly/truck) instead of pivoting in place", "a jerky or stepped pan instead of one smooth sweep"]
+    },
+    {
+      "key": "pan_right",
+      "name": "Pan Right",
+      "family": "pan_tilt",
+      "triggerPattern": "\\b(pans?\\s+right|panning\\s+right)\\b",
+      "marker": "Pan right:",
+      "description": "Pan right: the camera pivots horizontally to the right from a fixed position, the lens sweeping across the scene while the camera's physical location stays anchored — a smooth rotational sweep, not lateral travel.",
+      "negatives": ["the camera's physical position moving (a dolly/truck) instead of pivoting in place", "a jerky or stepped pan instead of one smooth sweep"]
+    },
+    {
+      "key": "tilt_up",
+      "name": "Tilt Up",
+      "family": "pan_tilt",
+      "triggerPattern": "\\b(tilts?\\s+up|tilting\\s+up)\\b",
+      "marker": "Tilt up:",
+      "description": "Tilt up: the camera pivots vertically upward from a fixed position, revealing more of the scene above the original frame while the camera's physical location stays anchored — a smooth rotational sweep, not a crane's physical rise.",
+      "negatives": ["the camera physically rising (a crane/jib) instead of pivoting in place", "an abrupt snap instead of a smooth sweep"]
+    },
+    {
+      "key": "tilt_down",
+      "name": "Tilt Down",
+      "family": "pan_tilt",
+      "triggerPattern": "\\b(tilts?\\s+down|tilting\\s+down)\\b",
+      "marker": "Tilt down:",
+      "description": "Tilt down: the camera pivots vertically downward from a fixed position, revealing more of the scene below the original frame while the camera's physical location stays anchored — a smooth rotational sweep, not a crane's physical descent.",
+      "negatives": ["the camera physically descending (a crane/jib) instead of pivoting in place", "an abrupt snap instead of a smooth sweep"]
+    },
+    {
+      "key": "dutch_angle",
+      "name": "Dutch Angle",
+      "family": "pan_tilt",
+      "triggerPattern": "\\b(dutch\\s*angle|canted\\s+angle|tilted\\s+horizon)\\b",
+      "marker": "Dutch angle:",
+      "description": "Dutch angle: the camera is deliberately tilted off the level horizon, canting the frame at an angle — the horizon line reads as visibly diagonal rather than level, used to signal unease, disorientation, or heightened tension.",
+      "negatives": ["a level, uncanted horizon", "an accidental-looking tilt with no deliberate intent"]
+    },
+    {
+      "key": "orbit_360",
+      "name": "360° Orbit",
+      "family": "orbit_arc",
+      "triggerPattern": "\\b(360|three\\s*sixty)[\\s°-]*(?:degree)?[\\s°-]*orbit|orbits?\\s+(?:smoothly\\s+)?(?:around|the\\s+subject)|full\\s+orbit\\b",
+      "marker": "360° orbit:",
+      "description": "360° orbit: the camera moves in one continuous circle fully around the subject, which stays centered and at a consistent distance throughout, revealing every side in a single unbroken rotation — a smooth, level circular path, not a series of cuts from different angles.",
+      "negatives": ["cuts between angles standing in for a continuous orbit", "the subject drifting off-center during the rotation", "the distance to the subject changing mid-orbit"]
+    },
+    {
+      "key": "arc_left",
+      "name": "Arc Left",
+      "family": "orbit_arc",
+      "triggerPattern": "\\b(arcs?\\s+left|arcing\\s+left|camera\\s+arcs?\\s+(?:around\\s+)?(?:to\\s+the\\s+)?left)\\b",
+      "marker": "Arc left:",
+      "description": "Arc left: the camera travels in a partial circular curve to the left around the subject, changing the viewing angle continuously while keeping the subject in frame — a genuine curved path, not a pan pivoting in place.",
+      "negatives": ["a pan substituting for real curved travel", "the arc completing a full 360° instead of a partial sweep"]
+    },
+    {
+      "key": "arc_right",
+      "name": "Arc Right",
+      "family": "orbit_arc",
+      "triggerPattern": "\\b(arcs?\\s+right|arcing\\s+right|camera\\s+arcs?\\s+(?:around\\s+)?(?:to\\s+the\\s+)?right)\\b",
+      "marker": "Arc right:",
+      "description": "Arc right: the camera travels in a partial circular curve to the right around the subject, changing the viewing angle continuously while keeping the subject in frame — a genuine curved path, not a pan pivoting in place.",
+      "negatives": ["a pan substituting for real curved travel", "the arc completing a full 360° instead of a partial sweep"]
+    },
+    {
+      "key": "turntable",
+      "name": "Turntable",
+      "family": "orbit_arc",
+      "triggerPattern": "\\b(turntable|lazy\\s*susan|subject\\s+rotat\\w*\\s+(?:slowly\\s+)?in\\s+place|rotates?\\s+on\\s+a\\s+platform)\\b",
+      "marker": "Turntable:",
+      "description": "Turntable: the camera stays fixed while the subject itself rotates smoothly in place on an implied turntable, presenting every side to a static lens — the inverse of an orbit, useful when the product or subject should read as displayed rather than the camera as moving.",
+      "negatives": ["the camera moving instead of the subject", "the subject's rotation stopping or stuttering instead of one continuous turn"]
+    },
+    {
+      "key": "rotation_3d",
+      "name": "3D Rotation",
+      "family": "orbit_arc",
+      "triggerPattern": "\\b(3d\\s*rotation|spiral\\s+(?:orbit|rotation)|corkscrew)\\b",
+      "marker": "3D rotation:",
+      "description": "3D rotation: the camera combines a circular orbit around the subject with a simultaneous vertical rise or descent, tracing a spiral path rather than a flat circle — a more complex, dynamic reveal than a level orbit alone.",
+      "negatives": ["a flat, purely horizontal orbit with no vertical component", "the vertical and rotational movement happening as separate stages instead of simultaneously"]
+    },
+    {
+      "key": "crane_up",
+      "name": "Crane Up",
+      "family": "crane_jib",
+      "triggerPattern": "\\b(cranes?\\s+up|craning\\s+up|boom\\s+up)\\b",
+      "marker": "Crane up:",
+      "description": "Crane up: the camera physically rises on a boom arm, gaining real height above its starting position while the shot continues, opening up a sweeping, elevated perspective on the scene below — a genuine vertical rise, not a tilt pivoting in place.",
+      "negatives": ["a tilt (pivoting in place) substituting for real vertical travel", "the height gain happening in a cut instead of continuous movement"]
+    },
+    {
+      "key": "crane_down",
+      "name": "Crane Down",
+      "family": "crane_jib",
+      "triggerPattern": "\\b(cranes?\\s+down|craning\\s+down|boom\\s+down)\\b",
+      "marker": "Crane down:",
+      "description": "Crane down: the camera physically descends on a boom arm, losing real height as the shot continues, moving from an elevated perspective down toward the scene — a genuine vertical descent, not a tilt pivoting in place.",
+      "negatives": ["a tilt (pivoting in place) substituting for real vertical travel", "the height loss happening in a cut instead of continuous movement"]
+    },
+    {
+      "key": "jib_up",
+      "name": "Jib Up",
+      "family": "crane_jib",
+      "triggerPattern": "\\b(jib\\s+up|jibbing\\s+up)\\b",
+      "marker": "Jib up:",
+      "description": "Jib up: the camera rises on a jib arm with a slight forward arcing quality as it climbs, a more fluid and swooping ascent than a straight vertical crane move.",
+      "negatives": ["a purely straight-line vertical rise with no arcing quality", "a tilt substituting for real physical rise"]
+    },
+    {
+      "key": "jib_down",
+      "name": "Jib Down",
+      "family": "crane_jib",
+      "triggerPattern": "\\b(jib\\s+down|jibbing\\s+down)\\b",
+      "marker": "Jib down:",
+      "description": "Jib down: the camera descends on a jib arm with a slight arcing quality as it drops, a more fluid and swooping descent than a straight vertical crane move.",
+      "negatives": ["a purely straight-line vertical descent with no arcing quality", "a tilt substituting for real physical descent"]
+    },
+    {
+      "key": "overhead",
+      "name": "Overhead",
+      "family": "crane_jib",
+      "triggerPattern": "\\b(overhead\\s+shot|bird'?s?[\\s-]?eye|top[\\s-]?down\\s+(?:shot|view)|directly\\s+above)\\b",
+      "marker": "Overhead:",
+      "description": "Overhead: the camera is positioned directly above the subject looking straight down, flattening the scene into a top-down composition — can hold still or drift slowly, but the vantage point stays essentially vertical throughout.",
+      "negatives": ["the camera at an angled high vantage instead of truly overhead", "the subject only partially visible from directly above"]
+    },
+    {
+      "key": "robo_arm_sweep",
+      "name": "Robo-Arm Sweep",
+      "family": "crane_jib",
+      "triggerPattern": "\\b(robo\\s*arm|robotic\\s+arm\\s+(?:camera|move)|precision\\s+(?:camera\\s+)?sweep)\\b",
+      "marker": "Robo-arm sweep:",
+      "description": "Robo-arm sweep: the camera executes a precise, mechanically fluid multi-axis move — combining travel, rotation, and height change in one continuous, perfectly smooth pass with none of the organic imperfection of a human-operated rig.",
+      "negatives": ["a shaky or organic-feeling move instead of mechanically smooth precision", "single-axis movement instead of a combined multi-axis path"]
+    },
+    {
+      "key": "snorricam_style",
+      "name": "Snorricam-Style",
+      "family": "handheld_dynamic",
+      "triggerPattern": "\\b(snorricam|body[\\s-]?mounted\\s+camera|rig(?:ged)?\\s+to\\s+the\\s+(?:subject|actor|character))\\b",
+      "marker": "Snorricam-style:",
+      "description": "Snorricam-style: the camera is rigidly mounted to the subject's own body, so the subject stays locked and centered in frame at a constant distance while the entire background sweeps, spins, and shifts chaotically around them as they move.",
+      "negatives": ["the subject drifting out of the fixed frame position", "the background staying stable instead of moving with the subject's motion"]
+    },
+    {
+      "key": "fpv_drone",
+      "name": "FPV Drone",
+      "family": "handheld_dynamic",
+      "triggerPattern": "\\b(fpv\\s*(?:drone)?|first[\\s-]?person\\s+drone|drone\\s+flythrough)\\b",
+      "marker": "FPV drone:",
+      "description": "FPV drone: a fast, agile first-person-view flight path that swoops, dives, and threads through the scene with the loose, slightly unstable energy of a small racing drone — far more aggressive and continuous than a smooth cinematic crane move.",
+      "negatives": ["a slow, stable, cinematic move instead of fast agile flight", "the path staying flat and level instead of swooping through multiple planes"]
+    },
+    {
+      "key": "wiggle",
+      "name": "Wiggle",
+      "family": "handheld_dynamic",
+      "triggerPattern": "\\b(wiggle|jitter\\w*\\s+camera|playful\\s+shake)\\b",
+      "marker": "Wiggle:",
+      "description": "Wiggle: a light, playful handheld jitter, more pronounced and energetic than standard handheld instability but still small in amplitude — reads as lively and spontaneous rather than chaotic.",
+      "negatives": ["a perfectly stable image", "shake so extreme the subject becomes hard to track"]
+    },
+    {
+      "key": "low_shutter",
+      "name": "Low Shutter",
+      "family": "handheld_dynamic",
+      "triggerPattern": "\\b(low\\s+shutter|motion\\s+blur\\s+(?:effect|look)|strobing\\s+motion)\\b",
+      "marker": "Low shutter:",
+      "description": "Low shutter: a deliberately slow shutter speed leaves visible motion blur and a faint strobing smear trailing any movement in frame — a dreamlike, slightly disorienting look rather than crisp, frozen motion.",
+      "negatives": ["crisp, blur-free motion", "the blur effect only on the camera's own movement and not on the subject's motion"]
+    },
+    {
+      "key": "handheld",
+      "name": "Handheld",
+      "family": "handheld_dynamic",
+      "triggerPattern": "\\b(handheld|hand-held)\\b",
+      "marker": "Handheld:",
+      "description": "Handheld: the camera has the subtle, organic instability of being held by a human operator — small natural drifts and micro-corrections in framing, never a perfectly locked or mechanically smooth image.",
+      "negatives": ["a perfectly stable, locked-off image", "exaggerated shake that reads as an earthquake rather than a human hand"]
+    },
+    {
+      "key": "hyperlapse",
+      "name": "Hyperlapse",
+      "family": "time_effects",
+      "triggerPattern": "\\b(hyperlapse)\\b",
+      "marker": "Hyperlapse:",
+      "description": "Hyperlapse: the camera physically travels a real distance through the scene while time itself compresses dramatically — people and light shift and streak at high speed while the camera's own path stays smooth and deliberate, unlike a locked-off timelapse.",
+      "negatives": ["the camera staying in one fixed position (that's a timelapse, not a hyperlapse)", "the camera's travel path looking jittery instead of smooth despite the sped-up time"]
+    },
+    {
+      "key": "timelapse",
+      "name": "Timelapse",
+      "family": "time_effects",
+      "triggerPattern": "\\b(time[\\s-]?lapse)\\b",
+      "marker": "Timelapse:",
+      "description": "Timelapse: the camera holds a single fixed position while time compresses dramatically — clouds, light, shadows, or crowds shift and flow at high speed while the framing itself never moves.",
+      "negatives": ["the camera itself moving or traveling (that's a hyperlapse, not a timelapse)", "time passing at normal speed"]
+    },
+    {
+      "key": "slow_motion_reveal",
+      "name": "Slow-Motion Reveal",
+      "family": "time_effects",
+      "triggerPattern": "\\b(slow[\\s-]?motion\\s+reveal|dramatic\\s+slow\\s+motion)\\b",
+      "marker": "Slow-motion reveal:",
+      "description": "Slow-motion reveal: the entire shot unfolds at a dramatically reduced speed, every movement stretched into individually readable phases with exaggerated hang-time on small details, building toward a deliberate, weighty reveal rather than a quick cut.",
+      "negatives": ["normal-speed motion undercutting the reveal", "the slow motion cutting away before the reveal actually lands"]
+    },
+    {
+      "key": "through_object_transition",
+      "name": "Through-Object Transition",
+      "family": "specialty",
+      "triggerPattern": "\\b(through[\\s-]?object|camera\\s+(?:moves|passes)\\s+through|whip[\\s-]?through)\\b",
+      "marker": "Through-object transition:",
+      "description": "Through-object transition: the camera moves directly through a foreground element — a doorway, foliage, a passing object — using it to wipe across the frame as a seamless transition into or out of the shot, rather than cutting.",
+      "negatives": ["a hard cut standing in for a continuous pass-through", "the foreground element never actually filling and clearing the frame"]
+    },
+    {
+      "key": "rack_focus",
+      "name": "Rack Focus",
+      "family": "specialty",
+      "triggerPattern": "\\b(rack\\s*focus|focus\\s+pulls?\\s+from)\\b",
+      "marker": "Rack focus:",
+      "description": "Rack focus: the lens's focal plane shifts deliberately from one subject or depth to another within the shot — what was sharp goes soft as what was soft resolves into sharp focus, directing attention without the camera itself needing to move.",
+      "negatives": ["both planes staying in focus simultaneously (deep focus) instead of a deliberate shift", "the camera's own position changing to replace the focus shift"]
+    },
+    {
+      "key": "focus_change",
+      "name": "Focus Change",
+      "family": "specialty",
+      "triggerPattern": "\\b(focus\\s+(?:shift|change)|background\\s+(?:blur\\s+)?resolv\\w*\\s+into\\s+focus)\\b",
+      "marker": "Focus change:",
+      "description": "Focus change: what is sharp and what is soft shift gradually over the course of the shot — a blurred background resolving into clarity, or the reverse — a subtler, slower cousin of a rack focus, without necessarily a hard, deliberate pull.",
+      "negatives": ["the focus plane staying completely fixed throughout the shot", "an abrupt hard rack-focus snap instead of a gradual shift"]
+    },
+    {
+      "key": "fisheye",
+      "name": "Fisheye",
+      "family": "specialty",
+      "triggerPattern": "\\b(fisheye|fish[\\s-]?eye\\s+lens|extreme\\s+wide[\\s-]?angle\\s+distortion)\\b",
+      "marker": "Fisheye:",
+      "description": "Fisheye: an extremely wide-angle lens that curves straight lines outward near the frame's edges and exaggerates perspective, giving an immersive, distorted, bulging view of the scene.",
+      "negatives": ["straight, undistorted lines at the frame edges", "a normal or moderate field of view instead of extreme distortion"]
+    },
+    {
+      "key": "object_pov",
+      "name": "Object POV",
+      "family": "specialty",
+      "triggerPattern": "\\b(object\\s+pov|point\\s+of\\s+view\\s+of\\s+the\\s+(?:product|object|item))\\b",
+      "marker": "Object POV:",
+      "description": "Object POV: the camera takes the literal first-person viewpoint of the product or object itself, as though looking out from it at the world or person around it, rather than looking at it from the outside.",
+      "negatives": ["a conventional external viewpoint looking at the object", "the perspective shifting away from the object's own vantage mid-shot"]
+    },
+    {
+      "key": "road_rush",
+      "name": "Road Rush",
+      "family": "specialty",
+      "triggerPattern": "\\b(road\\s*rush|speed\\s+blur\\s+pov|high[\\s-]?speed\\s+travel\\s+pov)\\b",
+      "marker": "Road rush:",
+      "description": "Road rush: a fast forward-facing point-of-view shot with pronounced streaking motion blur radiating from the center outward, conveying high-speed forward travel.",
+      "negatives": ["a slow or static forward view", "blur that doesn't radiate outward from the direction of travel"]
+    },
+    {
+      "key": "hero_rise",
+      "name": "Hero Rise",
+      "family": "specialty",
+      "triggerPattern": "\\b(hero\\s+(?:rise|shot|reveal)|rises?\\s+(?:up\\s+)?(?:past|to\\s+reveal))\\b",
+      "marker": "Hero rise:",
+      "description": "Hero rise: the camera starts low, near ground level, and rises smoothly upward past the subject as the shot continues, revealing them from a triumphant, empowered low-to-eye-level angle — a classic reveal move for a subject meant to feel powerful or important.",
+      "negatives": ["starting at eye level with no low starting point to rise from", "the rise happening as a cut instead of one continuous move"]
+    },
+    {
+      "key": "static_glam",
+      "name": "Static Glam",
+      "family": "specialty",
+      "triggerPattern": "\\b(static\\s+glam|glam\\s+shot|polished\\s+static\\s+shot|hero\\s+(?:pack|product)\\s+shot)\\b",
+      "marker": "Static glam:",
+      "description": "Static glam: the camera holds perfectly still on a deliberately polished, premium composition — clean background, glossy controlled lighting, the subject centered and stable — no movement at all, letting the lighting and framing alone carry the shot's quality.",
+      "negatives": ["any camera movement undermining the deliberately static composition", "flat or uneven lighting instead of glossy, premium quality"]
+    }
+  ]
+}

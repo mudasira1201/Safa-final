@@ -1,0 +1,96 @@
+{
+  "version": 2,
+  "note": "Chosen ONCE per project, at compile time (see pickColorPalette() in compiler.ts), and then locked into breakdown.colorPalette (prompt text, used by 4-images.ts) AND breakdown.colorGradeFilter (a real ffmpeg -vf filter chain, applied deterministically to every clip in 6-assemble.ts) for the rest of the film's life. Two DIFFERENT mechanisms for the SAME grade, on purpose: the prompt text is a suggestion the generation model may or may not follow precisely and consistently across dozens of independent API calls; the ffmpeg filter is a real pixel transform applied uniformly and deterministically after the fact, so color consistency does not depend on model compliance. Scored by counting keyword matches across the WHOLE script; 'naturalistic_neutral' has no triggerPattern and is the deliberate fallback when nothing else scores above zero (its filter is intentionally empty -- no post-process push at all). ffmpegFilter values are kept DELIBERATELY MILD -- a wrong/too-strong value here applies unconditionally to every single render, with no graceful degradation the way an ignored prompt hint has. Treat as an UNVERIFIED starting point; tune strength after a real render.",
+  "palettes": [
+    {
+      "key": "warm_amber_teal",
+      "triggerPattern": "\\b(market|home|family|kitchen|village|festival|reunion|warm)\\b",
+      "description": "Warm amber-and-teal cinematic grade: skin tones and warm light sources (sun, lamps, fire) are pushed toward a rich amber-orange, while shadows and any cool ambient areas (sky, shade, blue-hour light) lean subtly teal-cyan. Overall contrast is moderate, blacks are lifted slightly rather than crushed, creating an inviting, lived-in, naturalistic warmth.",
+      "ffmpegFilter": "colorbalance=rm=0.08:bm=-0.06:rs=-0.03:bs=0.05,eq=contrast=1.04:saturation=1.05"
+    },
+    {
+      "key": "cold_desaturated_thriller",
+      "triggerPattern": "\\b(thriller|chase|danger|crime|hunt(?:ed|ing)?|kidnap|escape|threat)\\b",
+      "description": "Cold desaturated thriller grade: overall color saturation is pulled down across the frame, with a persistent cool blue-grey cast over shadows and mid-tones. Skin tones stay just enough on the warm side to avoid looking sickly, but every other surface leans cool. Contrast is higher than naturalistic, with blacks crushed slightly deeper for tension.",
+      "ffmpegFilter": "colorbalance=bs=0.07:bm=0.04:rs=-0.05:rm=-0.03,eq=contrast=1.08:saturation=0.82:brightness=-0.015"
+    },
+    {
+      "key": "high_contrast_noir",
+      "triggerPattern": "\\b(noir|detective|investigat\\w*|mystery)\\b",
+      "description": "High-contrast noir grade: deep, crushed blacks, near-desaturated color (colors present but muted, almost monochrome-leaning), and strong contrast between lit and unlit areas of the frame. Any color that does appear (a red object, a warm skin tone) reads as a deliberate, isolated accent against an otherwise grey-toned image.",
+      "ffmpegFilter": "eq=contrast=1.15:saturation=0.55:brightness=-0.02:gamma=0.95"
+    },
+    {
+      "key": "vibrant_saturated_pop",
+      "triggerPattern": "\\b(celebration|carnival|parade|vibrant|colorful|joy(?:ful)?)\\b",
+      "description": "Vibrant saturated grade: colors across the frame are pushed noticeably more saturated than naturalistic -- reds, oranges and greens read bold and rich rather than muted, contrast is punchy, and skin tones stay warm and healthy-looking even as background colors intensify.",
+      "ffmpegFilter": "eq=contrast=1.07:saturation=1.25:brightness=0.005"
+    },
+    {
+      "key": "romantic_warm_pastel",
+      "triggerPattern": "\\b(romance|romantic|first date|proposal|anniversary|wedding|tender)\\b",
+      "description": "Romantic warm pastel grade: contrast is gently lowered and blacks lifted for a soft, dreamy feel, with a warm pink-gold push across skin tones and highlights. Nothing clips or crushes -- the whole image reads soft, warm and inviting rather than punchy.",
+      "ffmpegFilter": "colorbalance=rm=0.05:gm=0.02:bm=-0.04:rs=0.02,eq=contrast=0.97:saturation=0.92:brightness=0.01"
+    },
+    {
+      "key": "horror_sickly_green",
+      "triggerPattern": "\\b(horror|haunt(?:ed|ing)?|monster|nightmare|possessed|curse(?:d)?|demon\\w*)\\b",
+      "description": "Horror sickly-green grade: an unhealthy green-yellow cast sits over mid-tones and skin, blacks crush deeper than natural, and overall saturation is pulled down except for the sickly green push itself -- the image reads wrong, unwell, and quietly threatening even in an ordinary room.",
+      "ffmpegFilter": "colorbalance=gm=0.06:gs=0.04:rm=-0.03:bm=-0.02,eq=contrast=1.1:saturation=0.65:brightness=-0.02:gamma=0.93"
+    },
+    {
+      "key": "cool_scifi_cyan",
+      "triggerPattern": "\\b(sci-?fi|spaceship|futuristic|cyberpunk|laboratory|android|robot\\w*|dystopia\\w*)\\b",
+      "description": "Cool sci-fi cyan grade: a clean, cool cyan-blue push sits across the whole frame with slightly elevated contrast, giving surfaces a crisp, high-tech, faintly sterile edge while skin tones stay legible rather than turning fully monochrome.",
+      "ffmpegFilter": "colorbalance=bm=0.08:bs=0.05:gm=0.02:rm=-0.05,eq=contrast=1.1:saturation=0.9:brightness=0.0"
+    },
+    {
+      "key": "desert_sunbleached",
+      "triggerPattern": "\\b(desert|dune\\w*|arid|sahara|badlands|scorched earth)\\b",
+      "description": "Desert sun-bleached grade: warm sand and amber tones dominate, highlights are lifted and slightly bleached, contrast is gently lowered so shadow detail stays soft rather than crushed -- the whole image reads hot, dry and washed by relentless sun.",
+      "ffmpegFilter": "colorbalance=rm=0.07:rs=0.03:bm=-0.05,eq=contrast=0.95:saturation=0.85:brightness=0.02:gamma=1.05"
+    },
+    {
+      "key": "underwater_teal",
+      "triggerPattern": "\\b(underwater|ocean depths|submerged|scuba|coral reef)\\b",
+      "description": "Underwater teal grade: a strong teal-cyan cast dominates the whole frame, reds are pulled back noticeably (mimicking real light absorption underwater), and contrast stays soft with a gentle overall haze rather than crisp clarity.",
+      "ffmpegFilter": "colorbalance=bm=0.09:gm=0.04:rm=-0.07:rs=-0.04,eq=contrast=1.02:saturation=0.95:brightness=-0.01"
+    },
+    {
+      "key": "autumn_amber_brown",
+      "triggerPattern": "\\b(autumn|fall foliage|harvest|thanksgiving)\\b",
+      "description": "Autumn amber-brown grade: warm amber, rust and brown tones are pushed richer and more saturated across the frame, contrast is moderately raised, and the overall feel is earthy and golden rather than cool or clinical.",
+      "ffmpegFilter": "colorbalance=rm=0.09:rs=0.03:bm=-0.05:gm=0.01,eq=contrast=1.05:saturation=1.1:brightness=0.0"
+    },
+    {
+      "key": "winter_cool_blue",
+      "triggerPattern": "\\b(winter|snow\\w*|blizzard|frost\\w*|arctic)\\b",
+      "description": "Winter cool-blue grade: a crisp cool blue-white cast sits over the frame with slightly raised contrast and pulled-back saturation on warm tones, giving surfaces a clean, high-key, cold-air feel.",
+      "ffmpegFilter": "colorbalance=bm=0.06:bs=0.04:rm=-0.04,eq=contrast=1.08:saturation=0.8:brightness=0.01:gamma=1.02"
+    },
+    {
+      "key": "sepia_period_piece",
+      "triggerPattern": "\\b(period drama|vintage|old west|historical|antique|(?:18|19)\\d0s)\\b",
+      "description": "Sepia period-piece grade: a warm brown-gold cast leans the whole image toward sepia without going fully monochrome, saturation is pulled well down, contrast stays warm and slightly faded rather than crisp -- reading as an old photograph brought to life.",
+      "ffmpegFilter": "colorbalance=rm=0.1:gm=0.03:bm=-0.08:bs=-0.05,eq=contrast=1.03:saturation=0.5:brightness=0.0:gamma=0.98"
+    },
+    {
+      "key": "dreamy_pastel_soft",
+      "triggerPattern": "\\b(dream\\w*|memory|flashback|fantasy|whimsical)\\b",
+      "description": "Dreamy pastel-soft grade: contrast and saturation are both gently lowered with lifted blacks, softening the whole image toward a hazy, half-remembered quality with no single strong color push -- everything reads a little softer and further away than reality.",
+      "ffmpegFilter": "eq=contrast=0.93:saturation=0.8:brightness=0.02:gamma=1.03"
+    },
+    {
+      "key": "corporate_cool_blue",
+      "triggerPattern": "\\b(office|corporate|boardroom|business meeting|skyscraper)\\b",
+      "description": "Corporate cool-blue grade: a clean, neutral cool-blue push sits over the frame with slightly raised contrast and reduced warmth, reading as polished, professional and slightly impersonal rather than warm or lived-in.",
+      "ffmpegFilter": "colorbalance=bm=0.05:gm=-0.02:rm=-0.03,eq=contrast=1.06:saturation=0.85:brightness=0.0"
+    },
+    {
+      "key": "naturalistic_neutral",
+      "triggerPattern": "",
+      "description": "Naturalistic neutral grade: color and contrast stay close to true-to-life -- no strong push toward any single hue, skin tones render accurately, and contrast follows the scene's own natural lighting without an added stylistic tint.",
+      "ffmpegFilter": ""
+    }
+  ]
+}

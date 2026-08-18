@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "note": "Unlike ACTION/LIGHTING/PACE_LIBRARY (regex-triggered off authored text), this library is keyed by the shot's FINAL framing family (see framingFamily() in compiler.ts: xcu/cu/mcu/med/wide/other) -- a real cinematographer picks a lens for what the shot's SIZE needs, not because the script happened to use a magic word. Read and applied in compiler.ts's LENS LIBRARY INJECTION pass, which runs AFTER the narrative pass (REPEATED_FRAMING / CAMERA_CONTINUITY_CHAINED / COVERAGE_MONOTONY) so it keys off each shot's truly final camera text, not a value a later pass is about to overwrite. Appended to shot.camera (idempotent via the leading marker phrase, same discipline as the other libraries) and its negatives folded into the shot's negative prompt via negativeFor(). REALISM in 4-images.ts already makes a generic '35mm film' claim for every shot; this makes that claim framing-specific and photographically real instead of a single blanket number for every shot size. SELF-CONSISTENCY, CONFIRMED BY HAND AGAINST framingFamily()'s ACTUAL REGEX PRIORITY ORDER (extreme-close/ecu > close-up/cu/tight-on > medium-close > wide/establishing/long-shot > medium/ms > other), NOT JUST BY EYE: every entry's marker+description was checked to avoid accidentally containing a HIGHER-priority rule's trigger word than its own family (e.g. 'wider'/'widening' contain the substring 'wide' and would misclassify a med/other shot as wide on a recompile, silently duplicating the lens injection instead of being skipped by the marker idempotence check -- confirmed by manually tracing the regex before shipping this file, not assumed).",
+  "lenses": [
+    {
+      "family": "xcu",
+      "marker": "Lens (extreme close-up):",
+      "description": "Lens (extreme close-up): shot on an 85-100mm portrait telephoto lens, roughly a 20-24 degree angle of view, at a fast, low f-stop aperture. Depth of field is extremely shallow -- the background dissolves into smooth, creamy, fully unrecognizable blur, and even features slightly behind the plane of focus (an ear, the far side of the jaw) begin to soften. Facial proportions stay natural and undistorted, with no lens-edge stretching or bulging.",
+      "negatives": ["wide-angle facial distortion on an extreme close-up", "everything sharply in focus behind an extreme close-up face", "flat deep-focus rendering on a face-filling shot", "fisheye bulge on a close-up face"]
+    },
+    {
+      "family": "cu",
+      "marker": "Lens (close-up):",
+      "description": "Lens (close-up): shot on an 85mm portrait lens, roughly a 24 degree angle of view, at a fast, low f-stop aperture. The background falls into soft, smooth blur clearly separating the subject from their surroundings, facial proportions render naturally with the gentle compression a portrait lens gives, and there is no fisheye stretching at the edges of the face.",
+      "negatives": ["wide-angle distortion stretching the face", "deep focus background sharply detailed behind a close-up", "fisheye bulge on a close-up face", "flat lens-less rendering with no background separation"]
+    },
+    {
+      "family": "mcu",
+      "marker": "Lens (medium close framing):",
+      "description": "Lens (medium close framing): shot on a 50mm lens, the classic natural human-eye angle of view, roughly 40 degrees. The subject reads clearly against a softly blurred background -- enough separation to hold attention on them, while their immediate surroundings stay loosely legible rather than dissolving away entirely.",
+      "negatives": ["fisheye distortion", "hyper-deep focus with no background separation", "extreme telephoto compression flattening the whole scene"]
+    },
+    {
+      "family": "med",
+      "marker": "Lens (medium shot):",
+      "description": "Lens (medium shot): shot on a 35mm lens, roughly a 54 degree angle of view. Perspective stays natural and slightly broader than a portrait lens, depth of field is moderate -- the subject is clearly the focal point but their immediate surroundings stay legible rather than dissolving to mush.",
+      "negatives": ["extreme background blur erasing the setting on a medium shot", "telephoto compression flattening the scene", "fisheye distortion at the frame edges on a medium shot"]
+    },
+    {
+      "family": "wide",
+      "marker": "Lens (wide/establishing):",
+      "description": "Lens (wide/establishing): shot on a 24mm wide-angle lens, roughly a 74 degree angle of view. Depth of field is deep -- foreground, subject and background all stay legibly sharp -- and the frame carries a slight, natural sense of expanded space at its edges, never a fisheye bulge or bent-straight-line distortion.",
+      "negatives": ["shallow depth of field blurring the background on a wide establishing shot", "telephoto compression flattening a wide shot", "fisheye bulge distortion", "bent straight lines from an extreme wide-angle lens"]
+    },
+    {
+      "family": "other",
+      "marker": "Lens (standard):",
+      "description": "Lens (standard): shot on a 40mm lens, roughly a 48 degree angle of view -- a versatile, near-neutral field of view with no exaggerated compression or spreading -- a natural, documentary-style perspective appropriate to whatever this shot's own framing calls for.",
+      "negatives": ["extreme lens distortion", "inconsistent depth of field within the same shot"]
+    }
+  ]
+}
