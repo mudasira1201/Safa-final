@@ -32,19 +32,38 @@ function resolveResolution(): VideoResolution {
   return "480p";
 }
 
-/** GENERATION resolution for a given DELIVERY tier, when upscaling is
- *  enabled — one canonical place for this decision so the module-level
- *  default and applyProjectSettings() below can't drift apart (they used to
- *  both hardcode "480p" independently). Every tier through 1080p still
- *  generates at 480p (480->1080 is 2.25x, comfortably inside Topaz's
- *  documented 1-4x upscale_factor range — providers/upscale.ts). "4k" is the
- *  one exception: 480->2160 would be a 4.5x jump, over Topaz's cap, which
- *  computeUpscaleFactor() would otherwise silently CLAMP to 4x rather than
- *  error — a real, confirmed under-delivery bug (a "4K" file that's actually
- *  1920px tall) if this weren't special-cased. Generating at 1080p instead
- *  for a 4k request keeps the upscale at a clean 2x, well inside range. */
+/** GENERATION resolution for a given DELIVERY tier — one canonical place
+ *  for this decision so the module-level default and applyProjectSettings()
+ *  below can't drift apart.
+ *
+ *  CHANGED (explicit product decision, superseding the previous "every tier
+ *  through 1080p generates at 480p and gets upscaled" default): 480p, 720p,
+ *  and 1080p now each generate NATIVELY at their own selected tier — a user
+ *  who picks 720p gets a real 720p Seedance render, not a 480p render
+ *  upscaled to 720p-sized pixels. This is a genuine cost increase at 720p/
+ *  1080p (a real per-second price jump, not the free-lunch the upscale path
+ *  was) — a deliberate tradeoff the product owner chose explicitly, aware of
+ *  it, over the cheaper upscale-based delivery this function used to return
+ *  unconditionally.
+ *
+ *  "4k" remains the ONE exception, and MUST: Seedance has no native 4k tier
+ *  at all (RESOLUTIONS above tops out at "1080p" as a real generation
+ *  option), so a 4k delivery is only reachable via upscale — generating at
+ *  1080p and upscaling keeps that upscale at a clean 2x (1080->2160),
+ *  comfortably inside Topaz's documented 1-4x upscale_factor range
+ *  (providers/upscale.ts). Generating at 480p for a 4k request instead would
+ *  be a 4.5x jump — over Topaz's cap, which computeUpscaleFactor() would
+ *  otherwise silently CLAMP to 4x rather than error: a real, confirmed
+ *  under-delivery bug (a "4K" file that's actually 1920px tall), which is
+ *  exactly why this special case existed before this change and still does.
+ *
+ *  The upscale invocation itself (5-videos.ts, worker.ts) is already gated
+ *  on `runtime.resolution !== runtime.generationResolution`, so returning
+ *  the SAME value as `delivery` for 480p/720p/1080p correctly and
+ *  automatically skips the upscale pass entirely for those tiers — no
+ *  wasted Topaz call, no code change needed there. */
 function generationResolutionFor(delivery: string): string {
-  return delivery === "4k" ? "1080p" : "480p";
+  return delivery === "4k" ? "1080p" : delivery;
 }
 
 
